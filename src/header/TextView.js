@@ -1,19 +1,41 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View, ImageBackground } from "react-native";
-import HeaderMainScreen from "../header/HeaderMainScreen";
+import {
+  Text,
+  StyleSheet,
+  View,
+  ImageBackground,
+  FlatList,
+  Pressable,
+  Image,
+} from "react-native";
+import movies from "../data/movies";
+const DATA = movies;
+const TextView = () => {
+  const renderItem = ({ item }) => (
+    <View>
+      <Image
+        style={{ aspectRatio: 7 / 3, height: 170 }}
+        source={{ uri: item.image }}
+      />
+    </View>
+  );
+  return (
+    <View>
+      {/* <Image
+        style={{ aspectRatio: 7 / 3, height: 170 }}
+        source={{
+          uri: "https://photo2.tinhte.vn/data/attachment-files/2022/12/6251992_cover.jpg",
+        }}
+      /> */}
+      <FlatList
+        data={DATA}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
+  );
+};
 
-export default class TextView extends Component {
-  render() {
-    return (
-      <View>
-        <ImageBackground
-          source={{
-            uri: "https://scontent.fdad1-3.fna.fbcdn.net/v/t39.30808-6/309613890_606674637922853_1092136251732434059_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=e3f864&_nc_ohc=wU68cBIEaT0AX_GDb3j&_nc_ht=scontent.fdad1-3.fna&oh=00_AfCcgCbdOxU9u7Yy8K6lUvQrfv6MEgZVsYhv_g_cDYE--Q&oe=63BD27E2",
-          }}
-        ></ImageBackground>
-      </View>
-    );
-  }
-}
+export default TextView;
 
 const styles = StyleSheet.create({});
