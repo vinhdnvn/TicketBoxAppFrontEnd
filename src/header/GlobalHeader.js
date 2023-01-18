@@ -22,15 +22,12 @@ const styles = StyleSheet.create({
   pageCont: {
     height: "100%",
     width: "100%",
-    marginTop: 15,
-  },
-
-  text: {
-    color: "red",
+    marginTop: 55,
   },
   text: {
-    fontSize: 18,
-    fontWeight: "800",
+    fontSize: 17,
+    fontWeight: "600",
+    color: "white",
   },
   headerCont: {
     marginTop: 20,

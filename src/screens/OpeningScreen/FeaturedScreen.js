@@ -2,17 +2,29 @@ import {
   Text,
   View,
   StyleSheet,
-  ImageBackground,
-  Pressable,
+  useWindowDimensions,
   ScrollView,
   Image,
+  TouchableOpacity,
+  Dimensions,
+  FlatList,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import featured from "../../data/featured";
 import movies from "../../data/movies";
+import category from "../../data/category";
+import { useState } from "react";
 
-export default function FeaturedScreen() {
+const SRC_WIDTH = Dimensions.get("window").width;
+const CARD_LENGTH = SRC_WIDTH * 0.6;
+const SPACING = SRC_WIDTH * 0.05; //0.02
+const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
+
+const FeaturedScreen = () => {
+  const navigation = useNavigation();
   const DATA = movies;
   const FEATURED = featured;
+  const CATEGORY = category;
   const types = [
     {
       id: "0",
@@ -42,172 +54,129 @@ export default function FeaturedScreen() {
 
   return (
     <View style={{ width: "100%", height: 600 }}>
+      <View
+        style={{
+          margin: 15,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text style={{ color: "white", fontWeight: "bold" }}>Category</Text>
+        <Text style={{ color: "orange", fontWeight: "700" }}>
+          See all {">"}
+        </Text>
+      </View>
+      {/* List category */}
       <View>
         <ScrollView
           horizontal
-          style={{ height: 230 }}
+          style={{ height: 120 }}
           showsHorizontalScrollIndicator={false}
         >
-          {FEATURED.map((item, index) => (
-            <View
-              key={index}
-              style={{
-                borderLeftWidth: 0.5,
-                borderRightWidth: 0.5,
-                borderTopWidth: 0.5,
-                borderBottomWidth: 0.5,
-                borderRadius: 4,
-                marginRight: 20,
-              }}
-            >
-              <ImageBackground
-                style={{ aspectRatio: 7 / 3, height: 170 }}
-                source={{
-                  uri: item.image,
+          {CATEGORY.map((item, index) => (
+            <View key={index} style={{ alignItems: "center" }}>
+              <View
+                style={{
+                  backgroundColor: "#515151",
+                  width: 60,
+                  height: 60,
+                  borderRadius: 20,
+                  shadowColor: "#FFFFFF",
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 1.41,
+                  marginHorizontal: 15,
+                  elevation: 2,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Pressable style={style.imageContent}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginTop: 5,
-                    }}
-                  >
-                    <View>
-                      <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                        {item.title}
-                      </Text>
-                      <Text style={{ color: "gray", fontSize: 14 }}>
-                        {item.location}
-                      </Text>
-                    </View>
-                    <Pressable
-                      style={{
-                        backgroundColor: "orange",
-                        padding: 10,
-                        borderRadius: 6,
-                      }}
-                    >
-                      <Text style={{ textAlign: "center", fontWeight: "400" }}>
-                        Đặt vé
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <Text style={{ marginTop: 10, fontWeight: "500" }}>
-                    {item.types}
-                  </Text>
-                </Pressable>
-              </ImageBackground>
+                <Text style={{ fontSize: "25" }}>{item.icon}</Text>
+              </View>
+              <View style={{ marginTop: 8 }}>
+                <Text style={{ color: "gray", fontSize: 12 }}>{item.type}</Text>
+              </View>
             </View>
           ))}
         </ScrollView>
       </View>
 
-      <ListCont types={types}></ListCont>
-      <MovieList DATA={DATA}></MovieList>
+      <View style={{ marginHorizontal: 15 }}>
+        <Text style={{ fontWeight: "bold", color: "white" }}>
+          Showing in this month ✨
+        </Text>
+      </View>
+      <View>
+        <MovieList DATA={DATA}></MovieList>
+      </View>
     </View>
   );
-}
+};
 
 const MovieList = ({ DATA }) => {
+  const [scrollX, setScrollX] = useState(0);
+
+  const navigation = useNavigation();
   return (
-    <ScrollView style={{ alignSelf: "center" }}>
-      {DATA.map((item, index) => (
-        <View
-          key={index}
-          style={{
-            borderColor: "#D0C9C9",
-            borderWidth: 0.5,
-            borderRadius: 5,
-            marginBottom: 10,
-            marginHorizontal: 5,
-          }}
-        >
-          <Pressable>
-            <Image
-              style={{ aspectRatio: 7 / 2.9, height: 150, borderRadius: 3 }}
-              source={{ uri: item.image }}
-            />
-            <View style={{ marginLeft: 6, marginTop: 8 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                Phim Chiếu Rạp : {item.title}
-              </Text>
-              <View style={{ marginTop: 4 }}>
-                <Text style={{ fontSize: 12, color: "gray" }}>{item.time}</Text>
-                <Text style={{ fontSize: 12, color: "gray" }}>
-                  {item.types}
-                </Text>
-              </View>
+    <View style={{ marginTop: 20 }}>
+      <FlatList
+        data={DATA}
+        horizontal
+        keyExtractor={(item) => item.id}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <View style={{ alignItems: "center" }}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Movie Detail", {
+                  title: item.title,
+                  time: item.time,
+                  types: item.types,
+                  address: item.address,
+                  price: item.price,
+                  image: item.image,
+                  synopsis: item.synopsis,
+                })
+              }
+            >
               <View
+                scrollX={scrollX}
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  marginBottom: 6,
+                  width: CARD_LENGTH,
+                  height: 330,
+                  overflow: "hidden",
+                  marginLeft: Number == 0 ? SIDECARD_LENGTH : SPACING,
+                  marginRight: Number == 2 ? SIDECARD_LENGTH : SPACING,
+                  borderRadius: 20,
                 }}
               >
-                <View
-                  style={{
-                    marginRight: 14,
-                    borderColor: "black",
-                    borderWidth: 0.5,
-                    backgroundColor: "black",
-                    borderRadius: 5,
-                    padding: 4,
-                    marginTop: 4,
-                  }}
-                >
-                  <Text style={{ fontSize: 13, color: "white" }}>
-                    {item.address}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    marginRight: 14,
-                    borderColor: "black",
-                    borderWidth: 0.5,
-                    borderColor: "#706D6D",
-                    backgroundColor: "white",
-                    borderRadius: 5,
-                    padding: 4,
-                    marginTop: 4,
-                  }}
-                >
-                  <Text style={{ fontSize: 13, color: "#706D6D" }}>
-                    {item.price}
-                  </Text>
+                <View style={{ alignItems: "center" }}>
+                  <Image
+                    style={{ aspectRatio: 4 / 3, height: "100%" }}
+                    source={{
+                      uri: item.image,
+                    }}
+                  />
                 </View>
               </View>
-            </View>
-          </Pressable>
-        </View>
-      ))}
-    </ScrollView>
-  );
-};
-const ListCont = ({ types }) => {
-  return (
-    <View style={{ marginTop: 10 }}>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {types.map((item, index) => (
-          <View
-            style={{
-              padding: 5,
-              margin: 10,
-              borderColor: "black",
-              borderWidth: 0.5,
-              borderRadius: 4,
-            }}
-            key={index}
-          >
-            <Text style={{ fontSize: 14 }}>{item.name}</Text>
+              <Text style={{ color: "gray", fontSize: 12, marginTop: 5 }}>
+                {item.title}
+              </Text>
+            </TouchableOpacity>
           </View>
-        ))}
-      </ScrollView>
+        )}
+        onScroll={(event) => {
+          setScrollX(event.nativeEvent.contentOffset.x);
+        }}
+      />
     </View>
   );
 };
+
+export default FeaturedScreen;
 
 const style = StyleSheet.create({
   imageContent: {
