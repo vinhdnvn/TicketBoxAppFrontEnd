@@ -1,38 +1,59 @@
-import React, { Component } from "react";
+import React, { useRef, useState } from "react";
 import {
   Text,
   StyleSheet,
   View,
-  SafeAreaView,
   TouchableOpacity,
+  Image,
+  ScrollView,
+  Dimensions,
 } from "react-native";
-
+// import { Carousel } from "react-native-reanimated-carousel";
 import FeaturedScreen from "./FeaturedScreen";
-import Icon from "react-native-vector-icons/AntDesign";
-import GlobalHeader from "../../header/GlobalHeader";
-import GlobalFooter from "../../footer/GlobalFooter";
+
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.pageCont}>
       {/* Header */}
-      <GlobalHeader />
+
       {/* Content */}
-      <View>
-        <View style={styles.navigateCont}>
-          {/* <TouchableOpacity style={styles.touch}>
-            <Text>Featured</Text>
-          </TouchableOpacity> */}
-          <TouchableOpacity
-            style={styles.touch}
-            onPress={() => navigation.navigate("TextView")}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View>
+          <View style={styles.navigateCont}>
+            <View>
+              <Text style={{ color: "gray", fontSize: 12 }}>
+                Welcome Nguyễn Vinh 👋
+              </Text>
+              <Text
+                style={{ color: "white", marginTop: 10, fontWeight: "bold" }}
+              >
+                Let's relax and watch movie !
+              </Text>
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => navigation.navigate("Account")}>
+                <View>
+                  <Image
+                    style={{ height: 30, width: 30, borderRadius: "100%" }}
+                    source={{
+                      uri: "https://blog.logrocket.com/wp-content/uploads/2020/11/create-avatar-feature-react.png",
+                    }}
+                  ></Image>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+          {/* search bar */}
+          <View
+            style={{ backgroundColor: "#474747", margin: 15, borderRadius: 20 }}
           >
-            <Text style={{ fontWeight: "bold" }}>Nổi bật</Text>
-          </TouchableOpacity>
+            <Text style={{ color: "white", textAlign: "center" }}>
+              Đây là search bar
+            </Text>
+          </View>
+          <FeaturedScreen />
         </View>
-        <FeaturedScreen />
-      </View>
-      {/* Footer */}
-      <GlobalFooter />
+      </ScrollView>
     </View>
   );
 };
@@ -42,8 +63,8 @@ const styles = StyleSheet.create({
   pageCont: {
     height: "100%",
     width: "100%",
-    marginTop: 55,
     flex: 1,
+    backgroundColor: "#181818",
   },
 
   text: {
@@ -66,7 +87,10 @@ const styles = StyleSheet.create({
   navigateCont: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    marginTop: 40,
   },
   touch: {
     paddingVertical: 20,
