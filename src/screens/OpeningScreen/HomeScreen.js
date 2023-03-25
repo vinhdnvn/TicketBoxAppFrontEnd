@@ -21,13 +21,18 @@ const HomeScreen = ({ navigation }) => {
         <View>
           <View style={styles.navigateCont}>
             <View>
-              <Text style={{ color: "gray", fontSize: 12 }}>
-                Welcome Nguyễn Vinh 👋
-              </Text>
               <Text
-                style={{ color: "white", marginTop: 10, fontWeight: "bold" }}
+                style={{
+                  color: "black",
+                  marginTop: 10,
+                  fontWeight: "bold",
+                  fontSize: 25,
+                }}
               >
-                Let's relax and watch movie !
+                Hello Vinh !
+              </Text>
+              <Text style={{ color: "gray", fontSize: 16 }}>
+                Book your favourite film 👋
               </Text>
             </View>
             <View>
@@ -43,14 +48,7 @@ const HomeScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-          {/* search bar */}
-          <View
-            style={{ backgroundColor: "#474747", margin: 15, borderRadius: 20 }}
-          >
-            <Text style={{ color: "white", textAlign: "center" }}>
-              Đây là search bar
-            </Text>
-          </View>
+
           <FeaturedScreen />
         </View>
       </ScrollView>
@@ -64,7 +62,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     flex: 1,
-    backgroundColor: "#181818",
+    backgroundColor: "white",
   },
 
   text: {

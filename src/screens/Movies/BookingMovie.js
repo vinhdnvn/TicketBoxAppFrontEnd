@@ -4,13 +4,20 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/Ionicons";
 import Icon3 from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import Heart from "react-native-vector-icons/AntDesign";
 const BookingMovie = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const [liked, setLiked] = useState(false);
+  const handleLike = () => {
+    setLiked(!liked);
+  };
+
   return (
     <View
       style={{
-        backgroundColor: "#181818",
+        backgroundColor: "white",
         width: "100%",
         height: "100%",
         flex: 1,
@@ -44,7 +51,7 @@ const BookingMovie = () => {
                 style={{
                   aspectRatio: 7 / 10,
                   resizeMode: "cover",
-                  height: 300,
+                  height: 320,
                   borderRadius: 10,
                 }}
                 source={{ uri: route.params.image }}
@@ -72,17 +79,24 @@ const BookingMovie = () => {
 
                   elevation: 13,
                   marginVertical: 18,
+                  width: 100,
                 }}
               >
                 <View style={{ alignItems: "center", padding: 15 }}>
-                  <Icon name="video-camera" size={15} color={"white"} />
+                  <Icon name="video-camera" size={15} color={"black"} />
                   <Text style={{ color: "gray", fontSize: 10 }}>Type</Text>
-                  <Text style={{ color: "white", fontSize: 12 }}>
+                  <Text
+                    style={{
+                      color: "black",
+                      fontSize: 12,
+                      textAlign: "center",
+                    }}
+                  >
                     {route.params.types}
                   </Text>
                 </View>
               </View>
-              {/* duration */}
+
               <View
                 style={{
                   borderColor: "gray",
@@ -98,12 +112,13 @@ const BookingMovie = () => {
 
                   elevation: 13,
                   marginVertical: 18,
+                  width: 100,
                 }}
               >
                 <View style={{ alignItems: "center", padding: 15 }}>
-                  <Icon2 name="time-outline" size={20} color={"white"} />
+                  <Icon2 name="time-outline" size={20} color={"black"} />
                   <Text style={{ color: "gray", fontSize: 10 }}>Duration</Text>
-                  <Text style={{ color: "white", fontSize: 12 }}>1h 20p</Text>
+                  <Text style={{ color: "black", fontSize: 12 }}>1h 20p</Text>
                 </View>
               </View>
               {/* rating */}
@@ -122,12 +137,13 @@ const BookingMovie = () => {
 
                   elevation: 13,
                   marginVertical: 18,
+                  width: 100,
                 }}
               >
                 <View style={{ alignItems: "center", padding: 15 }}>
-                  <Icon3 name="star" size={15} color={"white"} />
+                  <Icon3 name="star" size={15} color={"black"} />
                   <Text style={{ color: "gray", fontSize: 10 }}>Rating</Text>
-                  <Text style={{ color: "white", fontSize: 12 }}>8.7/10</Text>
+                  <Text style={{ color: "black", fontSize: 12 }}>8.7/10</Text>
                 </View>
               </View>
             </View>
@@ -140,7 +156,7 @@ const BookingMovie = () => {
           >
             <Text
               style={{
-                color: "white",
+                color: "black",
                 fontSize: 16,
                 fontWeight: "bold",
               }}
@@ -179,19 +195,19 @@ const BookingMovie = () => {
           marginBottom: 25,
           marginTop: 10,
           borderRadius: 30,
-          justifyContent: "center",
+          justifyContent: "space-between",
           alignItems: "center",
-          shadowColor: "#fafafa",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.23,
-          shadowRadius: 2.62,
-
-          elevation: 4,
+          flexDirection: "row",
         }}
       >
+        {/* Like Button */}
+        <TouchableOpacity style={{ paddingRight: 50 }} onPress={handleLike}>
+          {liked ? (
+            <Heart name="heart" size={25} color="red" />
+          ) : (
+            <Heart name="hearto" size={25} color="black" />
+          )}
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Please choose 1 cinema !", {

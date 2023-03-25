@@ -27,12 +27,12 @@ const CinemaPicker = () => {
       style={{
         width: "100%",
         height: "100%",
-        backgroundColor: "#181818",
+        backgroundColor: "white",
         flexDirection: "column",
       }}
     >
       <View>
-        <Text style={{ color: "white" }}>Select date 👀</Text>
+        <Text style={{ color: "black" }}>Select date 👀</Text>
         <HorizontalDatepicker
           mode="gregorian"
           startDate={new Date("2023-01-22")}
@@ -52,7 +52,7 @@ const CinemaPicker = () => {
       </View>
       <Text
         style={{
-          color: "white",
+          color: "black",
           marginTop: 10,
           textAlign: "center",
           fontWeight: "bold",
@@ -92,7 +92,7 @@ const CinemaPicker = () => {
               />
               <View>
                 <Text
-                  style={{ color: "white", fontSize: 18, fontWeight: "bold" }}
+                  style={{ color: "black", fontSize: 18, fontWeight: "bold" }}
                 >
                   {item.name}
                 </Text>
@@ -101,16 +101,7 @@ const CinemaPicker = () => {
                 </Text>
               </View>
             </View>
-            {/* <Text
-              style={{
-                color: "white",
-                marginVertical: 20,
-                fontSize: 16,
-                fontWeight: "500",
-              }}
-            >
-              {item.name}
-            </Text> */}
+
             {mall.includes(item.name) ? (
               <FlatList
                 numColumns={3}
@@ -123,7 +114,7 @@ const CinemaPicker = () => {
                         title: route.params.title,
                         timeSelected: item,
                         tableSeats: seatsData,
-                        // date: selectedDate,
+
                         image: route.params.image,
                       })
                     }
