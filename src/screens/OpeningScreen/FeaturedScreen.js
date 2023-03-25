@@ -2,18 +2,15 @@ import {
   Text,
   View,
   StyleSheet,
-  useWindowDimensions,
-  ScrollView,
   Image,
   TouchableOpacity,
   Dimensions,
   FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import featured from "../../data/featured";
 import movies from "../../data/movies";
-import category from "../../data/category";
 import { useState } from "react";
+import { Rating } from "react-native-stock-star-rating";
 
 const SRC_WIDTH = Dimensions.get("window").width;
 const CARD_LENGTH = SRC_WIDTH * 0.6;
@@ -23,95 +20,103 @@ const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
 const FeaturedScreen = () => {
   const navigation = useNavigation();
   const DATA = movies;
-  const FEATURED = featured;
-  const CATEGORY = category;
-  const types = [
-    {
-      id: "0",
-      name: "EVENT",
-    },
-    {
-      id: "1",
-      name: "2D",
-    },
-    {
-      id: "2",
-      name: "3D",
-    },
-    {
-      id: "3",
-      name: "Aniversary",
-    },
-    {
-      id: "4",
-      name: "Meeting",
-    },
-    {
-      id: "5",
-      name: "Special",
-    },
-  ];
+  const popular = DATA.filter((film) => film.popular == true);
 
   return (
-    <View style={{ width: "100%", height: 600 }}>
-      <View
-        style={{
-          margin: 15,
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text style={{ color: "white", fontWeight: "bold" }}>Category</Text>
-        <Text style={{ color: "orange", fontWeight: "700" }}>
-          See all {">"}
-        </Text>
-      </View>
-      {/* List category */}
-      <View>
-        <ScrollView
-          horizontal
-          style={{ height: 120 }}
-          showsHorizontalScrollIndicator={false}
-        >
-          {CATEGORY.map((item, index) => (
-            <View key={index} style={{ alignItems: "center" }}>
-              <View
-                style={{
-                  backgroundColor: "#515151",
-                  width: 60,
-                  height: 60,
-                  borderRadius: 20,
-                  shadowColor: "#FFFFFF",
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 1.41,
-                  marginHorizontal: 15,
-                  elevation: 2,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: "25" }}>{item.icon}</Text>
-              </View>
-              <View style={{ marginTop: 8 }}>
-                <Text style={{ color: "gray", fontSize: 12 }}>{item.type}</Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-
-      <View style={{ marginHorizontal: 15 }}>
-        <Text style={{ fontWeight: "bold", color: "white" }}>
-          Showing in this month ✨
-        </Text>
-      </View>
+    <View style={{ width: "100%", height: "100%" }}>
+      <View style={{ marginHorizontal: 15 }}></View>
       <View>
         <MovieList DATA={DATA}></MovieList>
       </View>
+      {/* list popular */}
+      <View
+        style={{
+          flexDirection: "column",
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 22,
+          }}
+        >
+          <View>
+            <Text
+              style={{
+                color: "black",
+                marginTop: 10,
+                fontWeight: "bold",
+                fontSize: 20,
+              }}
+            >
+              Popular
+            </Text>
+          </View>
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("FavouriteMovies");
+              }}
+            >
+              <Text
+                style={{
+                  color: "gray",
+                  marginTop: 10,
+                  fontWeight: "bold",
+                  fontSize: 20,
+                }}
+              >
+                Favourite
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View>
+          <PopularList DATA={DATA} />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const PopularList = ({ DATA }) => {
+  const navigation = useNavigation();
+  const popular = DATA.filter((film) => film.popular == true);
+  return (
+    <View style={{ paddingHorizontal: 22 }}>
+      {popular.map((item) => (
+        <View
+          style={{
+            width: 100,
+            height: 150,
+            flexDirection: "row",
+            alignItems: "center",
+            marginVertical: 10,
+            borderRadius: 10,
+          }}
+          key={item.id}
+        >
+          <Image
+            source={{ uri: item.image }}
+            style={{
+              width: "100%",
+              height: "100%",
+              resizeMode: "contain",
+              borderRadius: 10,
+            }}
+          />
+          <View style={{ marginLeft: 20, width: 230 }}>
+            <Text style={{ color: "black", fontWeight: "600" }}>
+              {item.title}
+            </Text>
+            <View style={{ marginVertical: 5 }}>
+              <Rating stars={4.7} maxStars={5} size={12} />
+            </View>
+            <Text style={{ color: "gray" }}>{item.types}</Text>
+          </View>
+        </View>
+      ))}
     </View>
   );
 };
@@ -121,7 +126,7 @@ const MovieList = ({ DATA }) => {
 
   const navigation = useNavigation();
   return (
-    <View style={{ marginTop: 20 }}>
+    <View style={{ marginTop: 2 }}>
       <FlatList
         data={DATA}
         horizontal
@@ -145,8 +150,8 @@ const MovieList = ({ DATA }) => {
               <View
                 scrollX={scrollX}
                 style={{
-                  width: CARD_LENGTH,
-                  height: 330,
+                  width: 200,
+                  height: 300,
                   overflow: "hidden",
                   marginLeft: Number == 0 ? SIDECARD_LENGTH : SPACING,
                   marginRight: Number == 2 ? SIDECARD_LENGTH : SPACING,
@@ -155,16 +160,32 @@ const MovieList = ({ DATA }) => {
               >
                 <View style={{ alignItems: "center" }}>
                   <Image
-                    style={{ aspectRatio: 4 / 3, height: "100%" }}
+                    style={{
+                      aspectRatio: 4 / 3,
+                      height: "100%",
+                      resizeMode: "contain",
+                    }}
                     source={{
                       uri: item.image,
                     }}
                   />
                 </View>
               </View>
-              <Text style={{ color: "gray", fontSize: 12, marginTop: 5 }}>
+              <Text
+                style={{
+                  color: "gray",
+                  fontSize: 15,
+                  marginTop: 5,
+                  marginLeft: 22,
+
+                  textAlign: "left",
+                }}
+              >
                 {item.title}
               </Text>
+              <View style={{ paddingHorizontal: 20 }}>
+                <Rating stars={item.stars} maxStars={5} size={16} />
+              </View>
             </TouchableOpacity>
           </View>
         )}
@@ -178,15 +199,4 @@ const MovieList = ({ DATA }) => {
 
 export default FeaturedScreen;
 
-const style = StyleSheet.create({
-  imageContent: {
-    position: "absolute",
-    height: 110,
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 10,
-    top: "55%%",
-    left: 30,
-    width: "85%",
-  },
-});
+const style = StyleSheet.create({});

@@ -19,6 +19,8 @@ import BookingEvent from "./src/screens/Event/BookingEvent";
 import CinemaPicker from "./src/screens/Movies/CinemaPicker";
 import TheaterScreen from "./src/screens/Movies/TheaterScreen";
 import { MovieContext } from "./src/screens/Movies/Context";
+import FavouriteMovies from "./src/screens/Movies/FavouriteMovies";
+import DateSlider from "./src/components/DateSlider";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -27,10 +29,10 @@ const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: "#181818",
+          backgroundColor: "white",
         },
-        tabBarActiveTintColor: "white",
-        tabBarInactiveTintColor: "#5E5E5E",
+        tabBarActiveTintColor: "black",
+        tabBarInactiveTintColor: "#DADADA",
         tabBarShowLabel: false,
       }}
     >
@@ -44,12 +46,22 @@ const TabNavigator = () => {
           ),
         }}
       />
-
+      <Tab.Screen
+        name="FavouriteMovies"
+        component={FavouriteMovies}
+        options={{
+          headerShown: true,
+          tabBarActiveTintColor: "red",
+          tabBarIcon: ({ color }) => (
+            <Icon2 name="heart" size={25} color={color} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Tickets"
         component={OwnTicket}
         options={{
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Icon3 name="ticket-confirmation-outline" size={25} color={color} />
           ),
@@ -58,6 +70,16 @@ const TabNavigator = () => {
       <Tab.Screen
         name="Account"
         component={Personal}
+        options={{
+          headerShown: true,
+          tabBarIcon: ({ color }) => (
+            <Icon4 name="user" size={25} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="DateTest"
+        component={DateSlider}
         options={{
           headerShown: true,
           tabBarIcon: ({ color }) => (
@@ -86,27 +108,20 @@ export default function App() {
             component={BookingMovie}
             options={{
               headerStyle: {
-                backgroundColor: "#181818",
+                backgroundColor: "white",
               },
               headerTitleStyle: {
-                color: "white",
+                color: "black",
               },
               headerBackTitle: "",
-              headerTintColor: "white",
+              headerTintColor: "black",
             }}
           />
           {/* <Stack.Screen
-            name="MovieScreen"
-            component={MovieScreen}
+            name="HomeScreen"
+            component={HomeScreen}
             options={{
-              headerStyle: {
-                backgroundColor: "#181818",
-              },
-              headerTitleStyle: {
-                color: "white",
-              },
-              headerBackTitle: "",
-              headerTintColor: "white",
+              headerShown: false,
             }}
           /> */}
           <Stack.Screen
@@ -114,13 +129,13 @@ export default function App() {
             component={TheaterScreen}
             options={{
               headerStyle: {
-                backgroundColor: "#181818",
+                backgroundColor: "white",
               },
               headerTitleStyle: {
-                color: "white",
+                color: "black",
               },
               headerBackTitle: "",
-              headerTintColor: "white",
+              headerTintColor: "black",
             }}
           />
           <Stack.Screen
@@ -128,13 +143,13 @@ export default function App() {
             component={CinemaPicker}
             options={{
               headerStyle: {
-                backgroundColor: "#181818",
+                backgroundColor: "white",
               },
               headerTitleStyle: {
-                color: "white",
+                color: "black",
               },
               headerBackTitle: "",
-              headerTintColor: "white",
+              headerTintColor: "black",
             }}
           />
           <Stack.Screen
