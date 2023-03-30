@@ -241,16 +241,65 @@ const TheaterScreen = () => {
             </View>
             <Modal isVisible={isModalVisible}>
               <View style={{ flex: 1 }}>
-                <Button title="Hide modal" onPress={toggleModal} />
                 <View
                   style={{
                     backgroundColor: "white",
                     width: "100%",
-                    height: 745,
+                    height: 760,
                     borderRadius: 10,
+                    marginTop: 20,
                   }}
                 >
                   <PaymentMethod />
+                  {/* <Button title="Hide modal" onPress={toggleModal} />
+                   */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginHorizontal: 32,
+                      marginTop: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={toggleModal}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "red",
+                        borderRadius: 5,
+                        left: "33%",
+                        width: 100,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          paddingHorizontal: 20,
+                          paddingVertical: 10,
+                          color: "red",
+                        }}
+                      >
+                        Cancel
+                      </Text>
+                    </TouchableOpacity>
+                    {/* ========== */}
+                    <TouchableOpacity
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "black",
+                        borderRadius: 5,
+                        width: 100,
+                        alignItems: "center",
+                        marginRight: 15,
+                      }}
+                    >
+                      <Text
+                        style={{ paddingHorizontal: 20, paddingVertical: 10 }}
+                      >
+                        Buy
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </Modal>
@@ -344,6 +393,7 @@ const PaymentMethod = () => {
         <Text style={{ fontSize: 25, fontWeight: "500" }}>Payment method</Text>
         <View style={{ marginHorizontal: 10, marginTop: 10 }}>
           {/* payment method */}
+          <FlatList></FlatList>
           <TouchableOpacity
             style={{
               borderColor: "red",
@@ -458,42 +508,6 @@ const PaymentMethod = () => {
         </View>
       </View>
       {/* ============ */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginRight: 12,
-        }}
-      >
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderColor: "red",
-            borderRadius: 5,
-            left: "33%",
-            width: 100,
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{ paddingHorizontal: 20, paddingVertical: 8, color: "red" }}
-          >
-            Cancel
-          </Text>
-        </TouchableOpacity>
-        {/* ========== */}
-        <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            borderColor: "black",
-            borderRadius: 5,
-            width: 100,
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ paddingHorizontal: 20, paddingVertical: 8 }}>Buy</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
