@@ -1,131 +1,62 @@
-import {
-  addDays,
-  eachDayOfInterval,
-  eachWeekOfInterval,
-  format,
-  subDays,
-} from "date-fns";
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View, Picker } from "react-native";
-import PagerView from "react-native-pager-view";
+import { Text, TouchableOpacity, View, ScrollView, TextInput, Dimensions } from "react-native";
 
-const dates = eachWeekOfInterval(
-  {
-    start: subDays(new Date(), 14),
-    end: addDays(new Date(), 14),
-  },
-  {
-    weekStartsOn: 1,
-  }
-).reduce((acc: Date[][], cur) => {
-  const allDays = eachDayOfInterval({
-    start: cur,
-    end: addDays(cur, 6),
-  });
+import cinema from "../data/cinema";
+import { useEffect } from "react";
+import { FlatList } from "react-native";
+import axios, * as others from "axios";
+const baseUrl = "http://192.168.1.4:5000";
 
-  acc.push(allDays);
-  return acc;
-}, []);
+import { useNavigation } from "@react-navigation/native";
+import { Rating } from "react-native-stock-star-rating";
+
+const SRC_WIDTH = Dimensions.get("window").width;
+const CARD_LENGTH = SRC_WIDTH * 0.6;
+const SPACING = SRC_WIDTH * 0.05; //0.02
+const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
+
 const DateSlider = () => {
-  return (
-    <View style={{ width: "100%", height: "100%" }}>
-      <View style={{ flexDirection: "row" }}>
-        <View
-          style={{
-            backgroundColor: "gray",
-            padding: 20,
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 20,
-          }}
-        >
-          <Text style={{ color: "#F3EDE7", marginBottom: 10 }}>Cinema ⬇️</Text>
-          <Text style={{ color: "white" }}>CGV</Text>
-        </View>
-      </View>
-      <PagerView
-        style={{
-          width: "100%",
-          height: 80,
-          marginTop: 10,
-          backgroundColor: "red",
-        }}
-      >
-        {dates.map((week, i) => {
-          return (
-            <View key={i}>
-              <View
-                style={{ flexDirection: "row", justifyContent: "space-around" }}
-              >
-                {week.map((day, index) => {
-                  const [isPressed, setIsPressed] = useState(false);
+	const [movies, setMovies] = useState([]);
+	useEffect(() => {
+		const config = {
+			method: "get",
+			url: `${baseUrl}/movies`,
+			headers: {},
+		};
+		axios(config)
+			.then(function (response) {
+				if (response.status === 200) {
+					setMovies(response.data);
+					alert("Login success");
+				} else {
+					alert("Login failed");
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	}, []);
 
-                  const handlePress = () => {
-                    setIsPressed(!isPressed);
-                    console.log(day.toLocaleDateString("en-GB"));
-                  };
-                  const buttonColor = isPressed ? "red" : "orange";
-                  const txt = format(day, "EEE");
-                  return (
-                    <TouchableOpacity
-                      onPress={handlePress}
-                      style={{
-                        alignItems: "center",
-                        backgroundColor: buttonColor,
-                        borderRadius: 10,
-                        width: 50,
-                        height: 60,
-                        justifyContent: "center",
-                      }}
-                      key={index}
-                    >
-                      <View style={{ alignItems: "center" }}>
-                        <Text style={{ fontSize: 10 }}>{txt}</Text>
-                        <Text style={{ fontSize: 20 }}>{day.getDate()}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
-          );
-        })}
-      </PagerView>
-    </View>
-  );
-};
-const cinemas = [
-  { label: "Cinema 1", value: "cinema1" },
-  { label: "Cinema 2", value: "cinema2" },
-  { label: "Cinema 3", value: "cinema3" },
-];
+	// console.log("REnder from thisssssssssssssssssss =====================================");
+	// console.log(movies.forEach((element) => console.log(element.image)));
 
-const CinemaDropdown = () => {
-  const [selectedCinema, setSelectedCinema] = useState("");
+	const navigation = useNavigation();
+	const popular = movies.filter((film) => film.popular == true);
 
-  const onCinemaChange = (cinema) => {
-    setSelectedCinema(cinema);
-  };
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [name, setName] = useState("");
+	const [phone, setPhone] = useState("");
+	const [dateOfBirth, setDateOfBirth] = useState(new Date());
+	const [showDatePicker, setShowDatePicker] = useState(false);
+	const [confirmPassword, setConfirmPassword] = useState("");
 
-  return (
-    <View style={{ padding: 10 }}>
-      <Text style={{ fontWeight: "bold" }}>Select a Cinema:</Text>
-      <Picker
-        selectedValue={selectedCinema}
-        onValueChange={onCinemaChange}
-        style={{ height: 50, width: "100%" }}
-      >
-        {cinemas.map((cinema) => (
-          <Picker.Item
-            key={cinema.value}
-            label={cinema.label}
-            value={cinema.value}
-          />
-        ))}
-      </Picker>
-      <Text>You selected: {selectedCinema}</Text>
-    </View>
-  );
+	const [scrollX, setScrollX] = useState(0);
+	return (
+		<View style={{ width: "100%", height: "100%" }}>
+			{/* create form input test to insert new movies  */}
+		</View>
+	);
 };
 
 export default DateSlider;
