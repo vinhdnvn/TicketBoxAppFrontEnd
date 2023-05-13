@@ -21,6 +21,10 @@ import DateSlider from "./src/components/DateSlider";
 import Login from "./src/screens/Login_Register/Login";
 import Register from "./src/screens/Login_Register/Register";
 import { useState } from "react";
+
+import { Provider } from "react-redux";
+import { store } from "./src/Redux/store.js";
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -90,89 +94,99 @@ export default function App() {
 	const [styleStatusBar, setStyleStatusBar] = useState(styleTypes[1]);
 
 	return (
-		<NavigationContainer>
-			<StatusBar barStyle={styleStatusBar} />
-			<MovieContext>
-				<Stack.Navigator>
-					{/* create stack screen for login component */}
+		<Provider store={store}>
+			<NavigationContainer>
+				<StatusBar barStyle={styleStatusBar} />
+				<MovieContext>
+					<Stack.Navigator>
+						{/* create stack screen for login component */}
 
-					<Stack.Screen
-						name="TabNavigator"
-						component={TabNavigator}
+						<Stack.Screen
+							name="TabNavigator"
+							component={TabNavigator}
+							options={{
+								headerShown: false,
+							}}
+						/>
+						<Stack.Screen
+							name="Movie Detail"
+							component={BookingMovie}
+							options={{
+								headerShown: false,
+								headerStyle: {
+									backgroundColor: "white",
+								},
+								headerTitleStyle: {
+									color: "black",
+								},
+								headerBackTitle: "",
+								headerTintColor: "black",
+							}}
+						/>
+						<Stack.Screen
+							name="Theater"
+							component={TheaterScreen}
+							options={{
+								headerStyle: {
+									backgroundColor: "white",
+								},
+								headerTitleStyle: {
+									color: "black",
+								},
+								headerBackTitle: "",
+								headerTintColor: "black",
+							}}
+						/>
+						<Stack.Screen
+							name="Please choose 1 cinema !"
+							component={CinemaPicker}
+							options={{
+								headerShown: true,
+								headerStyle: {
+									backgroundColor: "white",
+								},
+								headerTitleStyle: {
+									color: "black",
+								},
+								headerBackTitle: "",
+								headerTintColor: "black",
+							}}
+						/>
+						<Stack.Screen
+							name="FeaturedScreen"
+							component={FeaturedScreen}
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="Login"
+							component={Login}
+							options={{
+								headerShown: false,
+								headerTitle: "Login",
+								headerTintColor: "black",
+							}}
+						/>
+						<Stack.Screen
+							name="Register"
+							component={Register}
+							options={{
+								headerShown: false,
+								headerTitle: "Please submit your information !",
+								headerTintColor: "black",
+							}}
+						/>
+						{/* <Stack.Screen
+						name="Home"
+						component={HomeScreen}
 						options={{
 							headerShown: false,
+							tabBarIcon: ({ color }) => <Film name="film" size={25} color={color} />,
 						}}
-					/>
-					<Stack.Screen
-						name="Movie Detail"
-						component={BookingMovie}
-						options={{
-							headerShown: false,
-							headerStyle: {
-								backgroundColor: "white",
-							},
-							headerTitleStyle: {
-								color: "black",
-							},
-							headerBackTitle: "",
-							headerTintColor: "black",
-						}}
-					/>
-					<Stack.Screen
-						name="Theater"
-						component={TheaterScreen}
-						options={{
-							headerStyle: {
-								backgroundColor: "white",
-							},
-							headerTitleStyle: {
-								color: "black",
-							},
-							headerBackTitle: "",
-							headerTintColor: "black",
-						}}
-					/>
-					<Stack.Screen
-						name="Please choose 1 cinema !"
-						component={CinemaPicker}
-						options={{
-							headerShown: true,
-							headerStyle: {
-								backgroundColor: "white",
-							},
-							headerTitleStyle: {
-								color: "black",
-							},
-							headerBackTitle: "",
-							headerTintColor: "black",
-						}}
-					/>
-					<Stack.Screen
-						name="FeaturedScreen"
-						component={FeaturedScreen}
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="Login"
-						component={Login}
-						options={{
-							headerShown: false,
-							headerTitle: "Login",
-							headerTintColor: "black",
-						}}
-					/>
-					<Stack.Screen
-						name="Register"
-						component={Register}
-						options={{
-							headerShown: false,
-							headerTitle: "Please submit your information !",
-							headerTintColor: "black",
-						}}
-					/>
-				</Stack.Navigator>
-			</MovieContext>
-		</NavigationContainer>
+					/> */}
+					</Stack.Navigator>
+				</MovieContext>
+			</NavigationContainer>
+		</Provider>
 	);
 }
 

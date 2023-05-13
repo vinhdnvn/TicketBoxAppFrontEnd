@@ -55,7 +55,6 @@ const CinemaPicker = () => {
 			.get(`${baseURL}/api/cinemas`)
 			.then((res) => {
 				setCinemaData(res.data);
-				alert("success");
 				console.log(cinemaData);
 			})
 			.catch((err) => {
