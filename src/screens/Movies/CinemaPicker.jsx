@@ -16,14 +16,19 @@ import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 // import CarouselSlider from "../../components/CarouselSlider";
 import movies from "../../data/movies";
+import { baseURL } from "../../api/client/private.client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect } from "react";
+import axios from "axios";
 const CinemaPicker = () => {
 	const route = useRoute();
 	const [selectedDate, setSelectedDate] = useState("");
 	const [mall, setMall] = useState([]);
 	const [seatsData, setSeatsData] = useState([]);
-	const cinemasData = cinema;
+	// const cinemasData = cinema;
 	const navigation = useNavigation();
 	const movie = movies;
+	const [cinemaData, setCinemaData] = useState([]);
 
 	// new
 	const [scrolX, setScrolX] = useState(0);
@@ -34,6 +39,30 @@ const CinemaPicker = () => {
 	const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
 
 	console.log(mall, "selected");
+
+	// useEffect(() => {
+	// 	const checkIfLoggedIn = async () => {
+	// 		const token = await AsyncStorage.getItem("token");
+	// 		if (token) {
+	// 			navigation.navigate("Login");
+	// 		}
+	// 	};
+	// 	checkIfLoggedIn();
+	// }, []);
+
+	useEffect(() => {
+		axios
+			.get(`${baseURL}/api/cinemas`)
+			.then((res) => {
+				setCinemaData(res.data);
+				alert("success");
+				console.log(cinemaData);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
+
 	return (
 		<View
 			style={{
@@ -44,9 +73,9 @@ const CinemaPicker = () => {
 		>
 			<FlatList
 				contentContainerStyle={{ marginTop: "35%", justifyContent: "center" }}
-				data={theater}
+				data={cinemaData}
 				horizontal
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item._id}
 				showsHorizontalScrollIndicator={false}
 				renderItem={({ item }) => (
 					<View style={{ alignItems: "center" }}>
@@ -59,9 +88,10 @@ const CinemaPicker = () => {
 								navigation.navigate("Theater", {
 									nameMovie: route.params.nameMovie,
 									tableSeats: item.tableData,
-									imageMovies: route.params.imageMovies,
+									image: route.params.image,
 									nameTheater: item.name,
 									genre: route.params.genre,
+									arraySeats: item.seats,
 								});
 							}}
 							style={{ justifyContent: "center", alignItems: "center" }}
@@ -85,7 +115,7 @@ const CinemaPicker = () => {
 											resizeMode: "contain",
 											backgroundColor: "black",
 										}}
-										source={{ uri: item.image }}
+										source={{ uri: item.cinemaImage }}
 									/>
 								</View>
 							</View>
@@ -94,91 +124,6 @@ const CinemaPicker = () => {
 					</View>
 				)}
 			></FlatList>
-
-			{/* <CarouselSlider Theater={cinemasData} /> */}
-
-			{/* <View>
-        {cinemasData.map((item, index) => (
-          <Pressable
-            key={index}
-            onPress={() => {
-              setMall(item.name);
-              setSeatsData(item.tableData);
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 20,
-                borderWidth: 0.5,
-                borderColor: "orange",
-                borderRadius: 30,
-                padding: 5,
-              }}
-            >
-              <Image
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 30,
-                  marginRight: 10,
-                }}
-                source={{ uri: item.image }}
-              />
-              <View>
-                <Text
-                  style={{ color: "black", fontSize: 18, fontWeight: "bold" }}
-                >
-                  {item.name}
-                </Text>
-                <Text numberOfLines={1} style={{ color: "gray", fontSize: 12 }}>
-                  {item.address}
-                </Text>
-              </View>
-            </View>
-
-            {mall.includes(item.name) ? (
-              <FlatList
-                numColumns={3}
-                data={item.showTimes}
-                renderItem={({ item }) => (
-                  <Pressable
-                    onPress={() =>
-                      navigation.navigate("Theater", {
-                        mall: mall,
-                        title: route.params.title,
-                        timeSelected: item,
-                        tableSeats: seatsData,
-                        image: route.params.image,
-                      })
-                    }
-                    style={{
-                      borderColor: "orange",
-                      borderWidth: 0.5,
-                      width: 80,
-                      borderRadius: 3,
-                      margin: 10,
-                      padding: 5,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        color: "orange",
-                        fontWeight: "500",
-                        textAlign: "center",
-                      }}
-                    >
-                      {item}
-                    </Text>
-                  </Pressable>
-                )}
-              />
-            ) : null}
-          </Pressable>
-        ))}
-      </View> */}
 		</View>
 	);
 };

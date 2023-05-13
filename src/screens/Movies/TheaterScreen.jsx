@@ -17,6 +17,8 @@ import { addDays, eachDayOfInterval, eachWeekOfInterval, format, subDays } from 
 import React, { useState } from "react";
 import PagerView from "react-native-pager-view";
 import BackModal from "react-native-vector-icons/AntDesign";
+import axios from "axios";
+import { baseURL } from "../../api/client/private.client";
 const dates = eachWeekOfInterval(
 	{
 		start: subDays(new Date(), 14),
@@ -39,16 +41,19 @@ const TheaterScreen = () => {
 	const route = useRoute();
 	const { seats, setSeats } = useContext(MovieCards);
 	const onSeatSelect = (item) => {
-		const seatSelected = seats.find((seat) => seat === item);
+		const seatSelected = seats.find((seat) => seat === item.name);
 
 		if (seatSelected) {
-			setSeats(seats.filter((seat) => seat !== item));
+			setSeats(seats.filter((seat) => seat !== item.name));
 		} else {
-			setSeats([...seats, item]);
+			setSeats([...seats, item.name]);
 		}
+
+		// change the isBooked value to true and click again to false
+		// item.isBooked ? (item.isBooked = true) : (item.isBooked = false);
 	};
 
-	console.log(seats, "you pressed on");
+	// console.log(seats, "you pressed on");
 
 	// book ticket button
 	const [isModalVisible, setModalVisible] = useState(false);
@@ -62,8 +67,8 @@ const TheaterScreen = () => {
 	const fee = 87;
 	const noOfSeats = seats.length;
 	const total = seats.length > 0 ? fee + noOfSeats * 240 : 0;
-	console.log(total);
-	console.log(seats, "seats selected");
+	// console.log(total);
+	// console.log(seats, "seats selected");
 
 	// ======for Date SLider ==========
 	const [selectedDate, setSelectedDate] = useState(null);
@@ -75,6 +80,21 @@ const TheaterScreen = () => {
 	const handleTimeSelect = (time) => {
 		setSelectedTime(time);
 	};
+	// fetch api create booking
+	// const hanldeCreateBooking = () => {
+	// 	axios
+	// 		.post(`${baseURL}/api/booking`, {
+
+	// 			bookingDate: selectedDate,
+	// 			bookingTime: selectedTime,
+	// 			seat: seats,
+	// 			movie: route.params.id,
+	// 		})
+	// 		.then((res) => {
+	// 			console.log(res.data);
+	// 		})
+	// 		.catch((err) => console.log(err));
+	// }
 
 	return (
 		<View style={{ width: "100%", height: "100%", backgroundColor: "white" }}>
@@ -94,42 +114,72 @@ const TheaterScreen = () => {
 				<FlatList
 					contentContainerStyle={{ alignItems: "center" }}
 					numColumns={6}
-					data={route.params.tableSeats}
+					data={route.params.arraySeats}
 					renderItem={({ item }) => (
 						<Pressable
+							disabled={item.isBooked}
 							onPress={() => onSeatSelect(item)}
 							style={{
 								margin: 10,
 								borderRadius: 10,
 							}}
 						>
-							{seats.includes(item) ? (
-								<Text
-									style={{
-										borderColor: "white",
+							{
+								seats.includes(item.name) ? (
+									<Text
+										style={{
+											borderColor: "white",
 
-										color: "black",
-										padding: 10,
-										borderRadius: 10,
-										backgroundColor: "orange",
-									}}
-								>
-									{item}
-								</Text>
-							) : (
-								<Text
-									style={{
-										borderColor: "white",
+											color: "black",
+											padding: 10,
+											borderRadius: 10,
+											backgroundColor: "orange",
+										}}
+									>
+										{item.name}
+									</Text>
+								) : // check if seats have item isBooked = true
+								item.isBooked ? (
+									<Text
+										style={{
+											borderColor: "white",
+											padding: 10,
+											color: "black",
+											borderRadius: 10,
+											backgroundColor: "#21F090",
+										}}
+									>
+										{item.name}
+									</Text>
+								) : (
+									<Text
+										style={{
+											borderColor: "white",
+											padding: 10,
+											color: "black",
+											borderRadius: 10,
+											backgroundColor: "#BCB9B9",
+										}}
+									>
+										{item.name}
+									</Text>
+								)
 
-										color: "black",
-										padding: 10,
-										borderRadius: 10,
-										backgroundColor: "#BCB9B9",
-									}}
-								>
-									{item}
-								</Text>
-							)}
+								// (
+								// 	<Text
+								// 		style={{
+								// 			borderColor: "white",
+
+								// 			color: "black",
+								// 			padding: 10,
+								// 			borderRadius: 10,
+								// 			backgroundColor: "#BCB9B9",
+								// 		}}
+								// 	>
+								// 		{item.name}
+								// 	</Text>
+								// )
+							}
 						</Pressable>
 					)}
 				/>
@@ -254,7 +304,7 @@ const TheaterScreen = () => {
 								>
 									<Image
 										source={{
-											uri: route.params.imageMovies,
+											uri: route.params.image,
 										}}
 										style={{ width: 90, height: 115, resizeMode: "cover", borderRadius: 20 }}
 									/>
@@ -463,7 +513,7 @@ const TheaterScreen = () => {
 											<Text
 												style={{ alignSelf: "center", marginTop: 10, fontSize: 20, color: "white" }}
 											>
-												Confirm
+												Confirm | Total: {total} $
 											</Text>
 										</TouchableOpacity>
 									</View>

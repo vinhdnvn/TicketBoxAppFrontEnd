@@ -7,17 +7,16 @@ import {
 	Dimensions,
 	FlatList,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import movies from "../../data/movies";
 import { useState } from "react";
 import { Rating } from "react-native-stock-star-rating";
-import cinema from "../../data/cinema";
 
 // connect backedn axios
 import axios, * as others from "axios";
 import { useEffect } from "react";
-const baseUrl = "http://172.20.10.13:5000";
-
+// const baseUrl = "http://192.168.1.47:5000";
+import { baseURL } from "../../api/client/private.client";
 const SRC_WIDTH = Dimensions.get("window").width;
 const CARD_LENGTH = SRC_WIDTH * 0.6;
 const SPACING = SRC_WIDTH * 0.05; //0.02
@@ -28,12 +27,14 @@ const FeaturedScreen = () => {
 	const DATA = movies;
 	const popular = DATA.filter((film) => film.popular == true);
 	const [movie, setMovies] = useState([]);
+	const [videoTrailer, setVideoTrailer] = useState("");
+	const route = useRoute();
 	useEffect(() => {
 		axios
-			.get(`${baseUrl}/movies`)
+			.get(`${baseURL}/api/movies`)
 			.then((res) => {
-				// console.log(res.data);
-				setMovies(res.data);
+				setMovies(res.data.movies);
+				// alert("success");
 			})
 			.catch((err) => {
 				console.log(err);
@@ -44,7 +45,7 @@ const FeaturedScreen = () => {
 		<View style={{ width: "100%", height: "100%" }}>
 			<View style={{ marginHorizontal: 15 }}></View>
 			<View>
-				<MovieList DATA={movies}></MovieList>
+				<MovieList DATA={movie}></MovieList>
 			</View>
 			{/* list popular */}
 			<View
@@ -138,104 +139,110 @@ const PopularList = ({ DATA }) => {
 };
 
 const MovieList = ({ DATA }) => {
+	const route = useRoute();
 	// new
-	const [movies, setMovies] = useState([]);
-	useEffect(() => {
-		const config = {
-			method: "get",
-			url: `${baseUrl}/movies`,
-			headers: {},
-		};
-		axios(config)
-			.then((res) => {
-				if (res.status === 200) {
-					setMovies(res.data);
-				} else {
-					alert("failed");
-				}
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}, []);
+	// const [movies, setMovies] = useState([]);
+	// useEffect(() => {
+	// 	const config = {
+	// 		method: "get",
+	// 		url: `${baseUrl}/api/movies`,
+	// 		headers: {},
+	// 	};
+	// 	axios(config)
+	// 		.then((res) => {
+	// 			if (res.status === 200) {
+	// 				setMovies(res.data);
+	// 				console.log(movies);
+	// 			} else {
+	// 				alert("failed");
+	// 			}
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log(err);
+	// 		});
+	// }, []);
 	const navigation = useNavigation();
 	const [scrollX, setScrollX] = useState(0);
 	// ====================
 
-	const theater = cinema;
-
 	return (
 		<View style={{ marginTop: 2 }}>
 			<FlatList
-				data={movies}
+				data={DATA}
 				horizontal
 				keyExtractor={(item) => item._id}
 				showsHorizontalScrollIndicator={false}
-				renderItem={({ item }) => (
-					<View key={item._id} style={{ alignItems: "center" }}>
-						<TouchableOpacity
-							style={{ alignItems: "flex-start" }}
-							key={item._id}
-							onPress={() =>
-								navigation.navigate("Movie Detail", {
-									movieId: item._id,
-									description: item.description,
-									nameMovie: item.nameMovie,
-									rating: item.rating,
-									rottenTomatoes: item.rottenTomatoes,
-									ign: item.ign,
-									genre: item.genre,
-									imageMovies: item.imageMovies,
-								})
-							}
-						>
-							<View
-								scrollX={scrollX}
-								style={{
-									width: 200,
-									height: 300,
-									overflow: "hidden",
-									marginLeft: Number == 0 ? SIDECARD_LENGTH : SPACING,
-									marginRight: Number == 2 ? SIDECARD_LENGTH : SPACING,
-									borderRadius: 20,
+				renderItem={({ item }) => {
+					return (
+						<View key={item._id} style={{ alignItems: "center" }}>
+							<TouchableOpacity
+								style={{ alignItems: "flex-start" }}
+								key={item._id}
+								onPress={() => {
+									navigation.navigate("Movie Detail", {
+										movieId: item._id,
+										description: item.description,
+										nameMovie: item.nameMovie,
+										rating: item.rating,
+										rottenTomatoes: item.rottenTomatoes,
+										ign: item.ign,
+										gerne: item.gerne,
+										image: item.image,
+										video: item.video,
+										token: route.params?.token,
+										userId: route.params?.userId,
+										userName: route.params?.userName,
+									});
 								}}
 							>
-								<View style={{ alignItems: "center" }}>
-									<Image
-										style={{
-											aspectRatio: 4 / 3,
-											height: "100%",
-											resizeMode: "contain",
-										}}
-										source={{
-											uri: item.imageMovies,
-										}}
-									/>
-								</View>
-							</View>
-
-							<View
-								style={{
-									marginLeft: 20,
-									marginTop: 10,
-								}}
-							>
-								<Text
-									numberOfLines={1}
+								<View
+									scrollX={scrollX}
 									style={{
 										width: 200,
-										color: "gray",
-										fontSize: 15,
-										marginLeft: 3,
+										height: 300,
+										overflow: "hidden",
+										marginLeft: Number == 0 ? SIDECARD_LENGTH : SPACING,
+										marginRight: Number == 2 ? SIDECARD_LENGTH : SPACING,
+										borderRadius: 20,
 									}}
 								>
-									{item.nameMovie}
-								</Text>
-								<Rating stars={item.stars} maxStars={5} size={16} />
-							</View>
-						</TouchableOpacity>
-					</View>
-				)}
+									<View style={{ alignItems: "center" }}>
+										<Image
+											style={{
+												aspectRatio: 4 / 3,
+												height: "100%",
+												resizeMode: "contain",
+											}}
+											source={{
+												uri: item.image,
+											}}
+										/>
+									</View>
+								</View>
+
+								<View
+									style={{
+										marginLeft: 20,
+										marginTop: 10,
+									}}
+								>
+									<Text
+										numberOfLines={1}
+										style={{
+											width: 200,
+											color: "gray",
+											fontSize: 15,
+											marginLeft: 3,
+										}}
+									>
+										{item.nameMovie}
+									</Text>
+									<Rating stars={item.stars} maxStars={5} size={16} />
+								</View>
+							</TouchableOpacity>
+						</View>
+					);
+				}}
 				onScroll={(event) => {
 					setScrollX(event.nativeEvent.contentOffset.x);
 				}}

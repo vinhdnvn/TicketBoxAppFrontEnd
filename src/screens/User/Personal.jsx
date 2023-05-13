@@ -2,10 +2,54 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Icon3 from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon2 from "react-native-vector-icons/Feather";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { baseURL } from "../../api/client/private.client";
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
+
+const getUserData = async () => {
+	try {
+		const token = await AsyncStorage.getItem("token");
+		const res = await axios.get(`${baseURL}/api/users`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		const userData = res.data;
+		console.log(userData.name, userData.email, userData.image);
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 const Personal = () => {
 	const navigation = useNavigation();
+	const route = useRoute();
+	const [userName, setUserName] = useState("");
+
+	// create function to handle logout clear all ìnformation of user
+	const handleLogout = async () => {
+		//    print the item token stored in async storage
+		console.log(await AsyncStorage.getItem("token"));
+		await AsyncStorage.removeItem("token");
+		navigation.navigate("Login");
+	};
+	useEffect(() => {
+		const getItemFromAsyncStorage = async () => {
+			try {
+				const name = await AsyncStorage.getItem("name");
+				if (name !== null) {
+					setUserName(name);
+				}
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		getItemFromAsyncStorage();
+	}, []);
+
 	return (
 		<View
 			style={{
@@ -44,7 +88,7 @@ const Personal = () => {
 							</View>
 							{/* name and edit butotn */}
 							<View style={{ marginLeft: 15 }}>
-								<Text style={{ fontWeight: "bold", fontSize: 16 }}>Nguyễn Vinh</Text>
+								<Text style={{ fontWeight: "bold", fontSize: 16 }}>{userName}</Text>
 								<View
 									style={{
 										marginTop: 10,
@@ -162,7 +206,7 @@ const Personal = () => {
 									<Text style={{ marginLeft: 10 }}>Delete Account</Text>
 								</View>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={() => navigation.navigate("Login")}>
+							<TouchableOpacity onPress={handleLogout}>
 								<View
 									style={{
 										borderBottomWidth: 1,

@@ -16,7 +16,7 @@ const OwnTicket = () => {
 	};
 	const [status, setStatus] = useState({});
 	const navigation = useNavigation();
-	const mario = require("D:/VKU/ki4/dacs3/BookingApp/fe/booking-application/src/data/film/mario.mp4");
+	const mario = require("../../data/film/mario.mp4");
 	return (
 		<View style={{ flex: 1 }}>
 			<View

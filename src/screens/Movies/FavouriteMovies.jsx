@@ -3,6 +3,9 @@ import { FlatList } from "react-native";
 import { Image, ScrollView } from "react-native";
 import { View, Text, StyleSheet, TextInput, ImageStore } from "react-native";
 import movies from "../../data/movies";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 // import { TextInput } from "react-native-paper";
 
 const DATA = movies;
@@ -12,6 +15,17 @@ const FavouriteMovies = () => {
 		const results = performSearch(searchTerm);
 		setSearchResults(results);
 	};
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		const checkIfLoggedIn = async () => {
+			const token = await AsyncStorage.getItem("token");
+			if (!token) {
+				navigation.navigate("Login");
+			}
+		};
+		checkIfLoggedIn();
+	}, []);
 	return (
 		<View style={{ width: "100%", height: "100%" }}>
 			<View>{/* <SearchBar /> */}</View>

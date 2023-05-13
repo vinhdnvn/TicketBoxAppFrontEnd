@@ -156,7 +156,7 @@ export default function App() {
 						name="Login"
 						component={Login}
 						options={{
-							headerShown: true,
+							headerShown: false,
 							headerTitle: "Login",
 							headerTintColor: "black",
 						}}
