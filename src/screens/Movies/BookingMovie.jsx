@@ -10,20 +10,26 @@ import {
 	useWindowDimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Heart from "react-native-vector-icons/AntDesign";
 import { Video } from "expo-av";
 import React from "react";
 import Back from "react-native-vector-icons/AntDesign";
 import cinema from "../../data/cinema";
 import PlayButton from "react-native-vector-icons/AntDesign";
+// import base url from backend
+import axios, * as others from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const baseUrl = "http://192.168.1.12:5000";
 
 const BookingMovie = () => {
 	const video = React.useRef(null);
 	const navigation = useNavigation();
 	const route = useRoute();
+	// const videoPath = route.params.video.replace(/\\/g, "//");
 	const [liked, setLiked] = useState(false);
-	const mario = require("D:/VKU/ki4/dacs3/BookingApp/fe/booking-application/src/data/film/dr_strange2.mp4");
+	const mario = require("D://MobileProject//src//data//film//dr_strange2.mp4");
+
 	const handleLike = () => {
 		setLiked(!liked);
 	};
@@ -36,20 +42,43 @@ const BookingMovie = () => {
 		setModalVisible(false);
 	};
 
+	const [videoTrailer, setVideoTrailer] = useState("");
+
 	const [status, setStatus] = useState({});
+
+	const checkIfLoggedIn = async () => {
+		try {
+			const token = await AsyncStorage.getItem("token");
+			if (!token) {
+				navigation.navigate("Login");
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<View style={{ flex: 1 }}>
 			<Video
 				ref={video}
-				style={{ position: "absolute", top: 0, bottom: "45%", left: 0, right: 0, zIndex: 1 }}
-				source={mario}
+				style={{
+					position: "absolute",
+					top: 0,
+					bottom: "45%",
+					left: 0,
+					right: 0,
+					zIndex: 1,
+				}}
+				source={{
+					uri: route.params.video,
+				}}
 				// useNativeControls
 				resizeMode="cover"
 				isLooping
 				shouldPlay={true}
 				onPlaybackStatusUpdate={(status) => setStatus(() => status)}
 			/>
+
 			<View
 				style={{
 					position: "absolute",
@@ -179,7 +208,7 @@ const BookingMovie = () => {
 				<View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
 					<Text style={{ fontSize: 20, fontWeight: "600" }}>{route.params.nameMovie}</Text>
 					<View style={{ borderWidth: 0.5, marginTop: 5, padding: 2, borderRadius: 5 }}>
-						<Text style={{ color: "gray", fontSize: 15 }}>{route.params.genre}</Text>
+						<Text style={{ color: "gray", fontSize: 15 }}>{route.params.gerne}</Text>
 					</View>
 				</View>
 				{/* Description */}
@@ -203,12 +232,33 @@ const BookingMovie = () => {
 				<View style={{ justifyContent: "center", alignItems: "center", bottom: -50 }}>
 					<TouchableOpacity
 						onPress={() => {
-							navigation.navigate("Please choose 1 cinema !", {
-								nameMovie: route.params.nameMovie,
-								imageMovies: route.params.imageMovies,
-								genre: route.params.genre,
-							});
-							video.current.pauseAsync();
+							const token = AsyncStorage.getItem("token");
+							if (!token) {
+								navigation.navigate("Login");
+								video.current.pauseAsync();
+							} else {
+								navigation.navigate("Please choose 1 cinema !", {
+									nameMovie: route.params.nameMovie,
+									image: route.params.image,
+									genre: route.params.genre,
+								});
+								video.current.pauseAsync();
+								console.log(token);
+							}
+
+							// checking token in async storage
+
+							// if (route.params.token) {
+							// 	navigation.navigate("Please choose 1 cinema !", {
+							// 		nameMovie: route.params.nameMovie,
+							// 		image: route.params.image,
+							// 		genre: route.params.genre,
+							// 	});
+							// 	video.current.pauseAsync();
+							// } else {
+							// 	navigation.navigate("Login");
+							// 	video.current.pauseAsync();
+							// }
 						}}
 					>
 						<View style={{ backgroundColor: "orange", padding: 20, borderRadius: 30 }}>

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
 	Text,
 	StyleSheet,
@@ -14,6 +15,7 @@ import FeaturedScreen from "./FeaturedScreen";
 import Finding from "react-native-vector-icons/Entypo";
 
 const HomeScreen = ({ navigation }) => {
+	const route = useRoute();
 	return (
 		<View style={styles.pageCont}>
 			{/* Header */}
@@ -25,13 +27,20 @@ const HomeScreen = ({ navigation }) => {
 						<View>
 							<TouchableOpacity
 								style={{ marginTop: 10, marginLeft: -10, marginRight: 10 }}
-								onPress={() => navigation.navigate("Account")}
+								onPress={() =>
+									navigation.navigate("Account", {
+										token: route.params?.token,
+										name: route.params?.name,
+										image: route.params?.image,
+										email: route.params?.email,
+									})
+								}
 							>
 								<View>
 									<Image
 										style={{ height: 50, width: 50, borderRadius: "100%" }}
 										source={{
-											uri: "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000",
+											uri: route.params?.image,
 										}}
 									></Image>
 								</View>
@@ -46,13 +55,17 @@ const HomeScreen = ({ navigation }) => {
 									fontSize: 25,
 								}}
 							>
-								Hello Vinh !
+								Hello {route.params?.name}!
 							</Text>
 							<Text style={{ color: "gray", fontSize: 16 }}>Book your favourite film 👋</Text>
 						</View>
 						{/* use toucopacity with finding icon  */}
 						<View style={{ marginTop: 10, marginLeft: 40 }}>
-							<TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => {
+									console.log(route.params?.token);
+								}}
+							>
 								<Finding
 									name="magnifying-glass"
 									size={45}
@@ -61,6 +74,8 @@ const HomeScreen = ({ navigation }) => {
 							</TouchableOpacity>
 						</View>
 					</View>
+					{/* check if route.params.token is have that show the featured screen, if not navigate back to Login */}
+					{/* {route.params?.token ? <FeaturedScreen /> : navigation.navigate("Login")} */}
 
 					<FeaturedScreen />
 				</View>
