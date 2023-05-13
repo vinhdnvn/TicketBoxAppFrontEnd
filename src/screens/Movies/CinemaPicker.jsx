@@ -20,6 +20,7 @@ import { baseURL } from "../../api/client/private.client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import axios from "axios";
+import { MAIN_COLOR_TEXT } from "../../Style/styles";
 const CinemaPicker = () => {
 	const route = useRoute();
 	const [selectedDate, setSelectedDate] = useState("");
@@ -32,13 +33,11 @@ const CinemaPicker = () => {
 
 	// new
 	const [scrolX, setScrolX] = useState(0);
-	const theater = cinema;
+
 	const SRC_WIDTH = Dimensions.get("window").width;
 	const CARD_LENGTH = SRC_WIDTH * 0.6;
 	const SPACING = SRC_WIDTH * 0.05; //0.02
 	const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
-
-	console.log(mall, "selected");
 
 	// useEffect(() => {
 	// 	const checkIfLoggedIn = async () => {
@@ -55,7 +54,6 @@ const CinemaPicker = () => {
 			.get(`${baseURL}/api/cinemas`)
 			.then((res) => {
 				setCinemaData(res.data);
-				console.log(cinemaData);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -68,6 +66,7 @@ const CinemaPicker = () => {
 				width: "100%",
 				height: "100%",
 				flexDirection: "column",
+				backgroundColor: "#151515",
 			}}
 		>
 			<FlatList
@@ -118,7 +117,11 @@ const CinemaPicker = () => {
 									/>
 								</View>
 							</View>
-							<Text style={{ fontSize: 18, fontWeight: "500", marginTop: 20 }}>{item.name}</Text>
+							<Text
+								style={{ fontSize: 18, fontWeight: "500", marginTop: 20, color: MAIN_COLOR_TEXT }}
+							>
+								{item.name}
+							</Text>
 						</TouchableOpacity>
 					</View>
 				)}
@@ -127,18 +130,6 @@ const CinemaPicker = () => {
 	);
 };
 
-const ListOnClickCinema = ({ item }) => (
-	<View>
-		<FlatList
-			data={item.showTimes}
-			renderItem={({ item }) => {
-				<Pressable>
-					<Text>{item}</Text>
-				</Pressable>;
-			}}
-		></FlatList>
-	</View>
-);
 const styles = StyleSheet.create({});
 
 export default CinemaPicker;

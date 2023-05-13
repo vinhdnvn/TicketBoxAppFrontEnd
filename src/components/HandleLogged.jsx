@@ -68,7 +68,7 @@ const HandleLogged = () => {
 			);
 
 			if (response.status === 200) {
-				alert("Login successfully");
+				// alert("Login successfully");
 				setUserInfor(response.data.user);
 				setIsLoading(false);
 				navigation.navigate("Account");
@@ -84,8 +84,26 @@ const HandleLogged = () => {
 	};
 
 	useEffect(() => {
-		handleLogin();
+		setTimeout(() => {
+			handleLogin();
+		}, 200);
 	}, []);
+
+	if (loginUserData.isLoading) {
+		return (
+			<View
+				style={{
+					width: "100%",
+					height: "100%",
+					flex: 1,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Text> Loading</Text>
+			</View>
+		);
+	}
 
 	return (
 		<View

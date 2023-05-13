@@ -34,18 +34,28 @@ const Personal = () => {
 		navigation.navigate("Home");
 	};
 	useEffect(() => {
-		const getItemFromAsyncStorage = async () => {
-			try {
-				const name = await AsyncStorage.getItem("name");
-				if (name !== null) {
-					setUserName(name);
+		setTimeout(() => {
+			const getItemFromAsyncStorage = async () => {
+				try {
+					const name = await AsyncStorage.getItem("name");
+					if (name !== null) {
+						setUserName(name);
+					}
+				} catch (error) {
+					console.log(error);
 				}
-			} catch (error) {
-				console.log(error);
-			}
-		};
-		getItemFromAsyncStorage();
+			};
+			getItemFromAsyncStorage();
+		}, 1500);
 	}, []);
+
+	if (loginUserData.isLoading) {
+		return (
+			<View style={{ width: "100%", height: "100%" }}>
+				<Text>loading</Text>
+			</View>
+		);
+	}
 
 	return (
 		<View style={{ width: "100%", height: "100%" }}>

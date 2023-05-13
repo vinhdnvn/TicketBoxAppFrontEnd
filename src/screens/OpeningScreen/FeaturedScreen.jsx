@@ -22,13 +22,18 @@ const CARD_LENGTH = SRC_WIDTH * 0.6;
 const SPACING = SRC_WIDTH * 0.05; //0.02
 const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
 
+// ===========REDUX===========
+import { useDispatch, useSelector } from "react-redux";
+import { MAIN_COLOR_TEXT, SECONDARY_COLOR_TEXT } from "../../Style/styles";
+
 const FeaturedScreen = () => {
 	const navigation = useNavigation();
 	const DATA = movies;
-	const popular = DATA.filter((film) => film.popular == true);
 	const [movie, setMovies] = useState([]);
-	const [videoTrailer, setVideoTrailer] = useState("");
-	const route = useRoute();
+
+	const loginUserData = useSelector((state) => state.personalInfor);
+	const dispatch = useDispatch();
+
 	useEffect(() => {
 		axios
 			.get(`${baseURL}/api/movies`)
@@ -40,6 +45,14 @@ const FeaturedScreen = () => {
 				console.log(err);
 			});
 	}, []);
+
+	// if (loginUserData.isLoading) {
+	// 	return (
+	// 		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+	// 			<Text>loading</Text>
+	// 		</View>
+	// 	);
+	// }
 
 	return (
 		<View style={{ width: "100%", height: "100%" }}>
@@ -63,7 +76,7 @@ const FeaturedScreen = () => {
 					<View>
 						<Text
 							style={{
-								color: "black",
+								color: SECONDARY_COLOR_TEXT,
 								marginTop: 10,
 								fontWeight: "bold",
 								fontSize: 20,
@@ -126,11 +139,11 @@ const PopularList = ({ DATA }) => {
 						}}
 					/>
 					<View style={{ marginLeft: 20, width: 230 }}>
-						<Text style={{ color: "black", fontWeight: "600" }}>{item.title}</Text>
+						<Text style={{ color: MAIN_COLOR_TEXT, fontWeight: "600" }}>{item.title}</Text>
 						<View style={{ marginVertical: 5 }}>
 							<Rating stars={4.7} maxStars={5} size={12} />
 						</View>
-						<Text style={{ color: "gray" }}>{item.types}</Text>
+						<Text style={{ color: SECONDARY_COLOR_TEXT }}>{item.types}</Text>
 					</View>
 				</View>
 			))}
@@ -176,7 +189,18 @@ const MovieList = ({ DATA }) => {
 					return (
 						<View key={item._id} style={{ alignItems: "center" }}>
 							<TouchableOpacity
-								style={{ alignItems: "flex-start" }}
+								style={{
+									alignItems: "flex-start",
+									shadowColor: "white",
+									shadowOffset: {
+										width: 0,
+										height: 5,
+									},
+									shadowOpacity: 0.34,
+									shadowRadius: 6.27,
+
+									elevation: 10,
+								}}
 								key={item._id}
 								onPress={() => {
 									navigation.navigate("Movie Detail", {
@@ -230,9 +254,10 @@ const MovieList = ({ DATA }) => {
 										numberOfLines={1}
 										style={{
 											width: 200,
-											color: "gray",
+											color: SECONDARY_COLOR_TEXT,
 											fontSize: 15,
 											marginLeft: 3,
+											marginTop: 2,
 										}}
 									>
 										{item.nameMovie}

@@ -1,88 +1,57 @@
-import React, { useState } from "react";
-import { Text, TouchableOpacity, View, Image, TextInput, Dimensions } from "react-native";
-import cinema from "../data/cinema";
-import { useEffect } from "react";
-import { FlatList } from "react-native";
-import axios, * as others from "axios";
-import { useNavigation } from "@react-navigation/native";
-import { Rating } from "react-native-stock-star-rating";
-import * as ImagePicker from "expo-image-picker";
-import { Alert } from "react-native";
-import { SafeAreaView } from "react-native";
-// ================REDUX===================
-import { useSelector, useDispatch } from "react-redux";
-//  useDispatch : gọi hành động thay đổi state
-//  useSelector : lấy state từ store
-import { updateSetUser } from "../Redux/Actions/updateAction";
-// =========================================
+import React, { useRef, useEffect } from "react";
+import { Button, StyleSheet, View } from "react-native";
+import Toast from "react-native-toast-message";
 
-const SRC_WIDTH = Dimensions.get("window").width;
-const CARD_LENGTH = SRC_WIDTH * 0.6;
-const SPACING = SRC_WIDTH * 0.05; //0.02
-const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
-
-const DateSlider = () => {
-	const [email, onChangeEmail] = useState("");
-
-	const dispatch = useDispatch();
+export default function DateSlider() {
 	useEffect(() => {
-		// console.log("INFOR", infor);
+		// You can control the ref programmatically, rather than using autoPlay
+		// animation.current?.play();
 	}, []);
+	const showToast = () => {
+		Toast.show({
+			type: "success",
+			position: "top",
+			text1: "Hello",
+			text2: "This is some something 👋",
+			visibilityTime: 3000,
+			autoHide: true,
+			topOffset: 30,
+			bottomOffset: 40,
+			style: {
+				backgroundColor: "#4CAF50",
+				borderRadius: 8,
+				padding: 16,
+			},
+			text1Style: {
+				fontSize: 30,
+				fontWeight: "bold",
+			},
+			text2Style: {
+				fontSize: 16,
+				color: "white",
+			},
+		});
+	};
+
 	return (
-		<View style={{ width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
-			{/* 		
-			<View
-				style={{
-					marginTop: 20,
-					flexDirection: "column",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				<Text style={{ fontWeight: "500" }}> You need Login to foward this tab ! </Text>
-			
-				<TouchableOpacity
-					style={{
-						marginTop: 30,
-						borderRadius: 5,
-						width: 150,
-						height: 50,
-						alignItems: "center",
-						justifyContent: "center",
-						backgroundColor: "blue",
-					}}
-					onPress={() => navigation.navigate("Login")}
-				>
-					<Text>Go to Login</Text>
-				</TouchableOpacity>
-			</View> */}
-			<Text>Email:</Text>
-			<Text>Image:</Text>
-			<Text>isAdmin:</Text>
-			<Text>Name:</Text>
-			<TextInput
-				style={{ height: 40, width: 300, marginTop: 50, borderWidth: 1 }}
-				onChangeText={onChangeEmail}
-				value={email}
-			></TextInput>
-			<TouchableOpacity
-				onPress={() => {
-					dispatch(updateSetUser(email));
-				}}
-				style={{
-					marginTop: 30,
-					borderRadius: 5,
-					width: 150,
-					height: 50,
-					alignItems: "center",
-					justifyContent: "center",
-					backgroundColor: "gray",
-				}}
-			>
-				<Text>UPDATE</Text>
-			</TouchableOpacity>
+		<View style={styles.animationContainer}>
+			{/* create TouchableOpacity to showToast */}
+			<Button title="Show Toast" onPress={showToast} />
+			<Toast ref={(ref) => Toast.setRef(ref)} />
 		</View>
 	);
-};
+}
 
-export default DateSlider;
+const styles = StyleSheet.create({
+	animationContainer: {
+		position: "absolute",
+		width: 600,
+		height: 600,
+		backgroundColor: "#fff",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	buttonContainer: {
+		paddingTop: 20,
+	},
+});

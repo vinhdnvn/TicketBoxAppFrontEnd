@@ -20,6 +20,7 @@ import PlayButton from "react-native-vector-icons/AntDesign";
 // import base url from backend
 import axios, * as others from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MAIN_COLOR_TEXT, PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
 const baseUrl = "http://192.168.1.12:5000";
 
 const BookingMovie = () => {
@@ -145,7 +146,7 @@ const BookingMovie = () => {
 				style={{
 					borderTopLeftRadius: 20,
 					borderTopRightRadius: 20,
-					backgroundColor: "white",
+					backgroundColor: "#151515",
 					zIndex: 2,
 					top: "50%",
 					bottom: 0,
@@ -173,10 +174,12 @@ const BookingMovie = () => {
 						}}
 					>
 						<View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-							<Text style={{ fontWeight: "700", fontSize: 15 }}>{route.params.rating}</Text>
-							<Text style={{ fontSize: 15, color: "gray" }}>/10</Text>
+							<Text style={{ fontWeight: "700", fontSize: 15, color: "white" }}>
+								{route.params.rating}
+							</Text>
+							<Text style={{ fontSize: 15, color: SECONDARY_COLOR_TEXT }}>/10</Text>
 						</View>
-						<Text style={{ color: "gray", fontWeight: "400" }}>IMDb</Text>
+						<Text style={{ color: SECONDARY_COLOR_TEXT, fontWeight: "400" }}>IMDb</Text>
 					</View>
 					<View
 						style={{
@@ -186,8 +189,10 @@ const BookingMovie = () => {
 							alignItems: "center",
 						}}
 					>
-						<Text style={{ fontWeight: "700", fontSize: 15 }}>{route.params.rottenTomatoes}%</Text>
-						<Text style={{ color: "gray", fontWeight: "400" }}>Rotten Tomatoes</Text>
+						<Text style={{ fontWeight: "700", fontSize: 15, color: "white" }}>
+							{route.params.rottenTomatoes}%
+						</Text>
+						<Text style={{ color: SECONDARY_COLOR_TEXT, fontWeight: "400" }}>Rotten Tomatoes</Text>
 					</View>
 					<View
 						style={{
@@ -198,17 +203,29 @@ const BookingMovie = () => {
 						}}
 					>
 						<View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-							<Text style={{ fontWeight: "700", fontSize: 15 }}>{route.params.ign}</Text>
-							<Text style={{ fontSize: 15, color: "gray" }}>/10</Text>
+							<Text style={{ fontWeight: "700", fontSize: 15, color: "white" }}>
+								{route.params.ign}
+							</Text>
+							<Text style={{ fontSize: 15, color: SECONDARY_COLOR_TEXT }}>/10</Text>
 						</View>
-						<Text style={{ color: "gray", fontWeight: "400" }}>IGN</Text>
+						<Text style={{ color: SECONDARY_COLOR_TEXT, fontWeight: "400" }}>IGN</Text>
 					</View>
 				</View>
 				{/* Title and gern film */}
 				<View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
-					<Text style={{ fontSize: 20, fontWeight: "600" }}>{route.params.nameMovie}</Text>
-					<View style={{ borderWidth: 0.5, marginTop: 5, padding: 2, borderRadius: 5 }}>
-						<Text style={{ color: "gray", fontSize: 15 }}>{route.params.gerne}</Text>
+					<Text style={{ fontSize: 20, fontWeight: "600", color: MAIN_COLOR_TEXT }}>
+						{route.params.nameMovie}
+					</Text>
+					<View
+						style={{
+							borderWidth: 0.5,
+							marginTop: 5,
+							padding: 2,
+							borderRadius: 5,
+							borderColor: "white",
+						}}
+					>
+						<Text style={{ color: SECONDARY_COLOR_TEXT, fontSize: 15 }}>{route.params.gerne}</Text>
 					</View>
 				</View>
 				{/* Description */}
@@ -220,13 +237,13 @@ const BookingMovie = () => {
 						paddingTop: 30,
 					}}
 				>
-					<Text style={{ fontSize: 15 }} numberOfLines={5}>
+					<Text style={{ fontSize: 15, color: SECONDARY_COLOR_TEXT }} numberOfLines={5}>
 						{route.params.description}
 					</Text>
 				</View>
 				{/* Read more description BUtton and add the event click to open modal */}
 				<TouchableOpacity style={{ justifyContent: "center", alignItems: "center" }}>
-					<Text style={{ color: "orange", fontWeight: "bold", fontSize: 15 }}>Read more</Text>
+					<Text style={{ color: PRIMARY_COLOR, fontWeight: "bold", fontSize: 15 }}>Read more</Text>
 				</TouchableOpacity>
 				{/* button Booking */}
 				<View style={{ justifyContent: "center", alignItems: "center", bottom: -50 }}>
@@ -261,10 +278,10 @@ const BookingMovie = () => {
 							// }
 						}}
 					>
-						<View style={{ backgroundColor: "orange", padding: 20, borderRadius: 30 }}>
+						<View style={{ backgroundColor: PRIMARY_COLOR, padding: 20, borderRadius: 30 }}>
 							<Text
 								style={{
-									color: "black",
+									color: MAIN_COLOR_TEXT,
 									fontWeight: "bold",
 									paddingHorizontal: 30,
 								}}
@@ -275,20 +292,6 @@ const BookingMovie = () => {
 					</TouchableOpacity>
 				</View>
 			</View>
-		</View>
-	);
-};
-
-const TheaterCinema = () => {
-	return (
-		<View style={{ flex: 1, backgroundColor: "#000" }}>
-			<FlatList
-				data={data}
-				keyExtractor={(item, index) => index.toString()}
-				renderItem={({ item }) => {
-					<Image source={{ uri: item.image }}></Image>;
-				}}
-			></FlatList>
 		</View>
 	);
 };

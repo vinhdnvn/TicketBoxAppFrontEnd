@@ -1,4 +1,4 @@
-import { StyleSheet, StatusBar } from "react-native";
+import { StyleSheet, StatusBar, View } from "react-native";
 // ICON
 import Film from "react-native-vector-icons/Feather";
 import Icon2 from "react-native-vector-icons/Feather";
@@ -20,10 +20,20 @@ import FavouriteMovies from "./src/screens/Movies/FavouriteMovies";
 import DateSlider from "./src/components/DateSlider";
 import Login from "./src/screens/Login_Register/Login";
 import Register from "./src/screens/Login_Register/Register";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Provider } from "react-redux";
 import { store } from "./src/Redux/store.js";
+
+// ==========Loading Animation===========
+import LottieView from "lottie-react-native";
+
+// ===========REDUX===========
+import { useDispatch, useSelector } from "react-redux";
+import { setStart } from "./src/Redux/Actions/updateAction.js";
+import { MAIN_COLOR_TEXT, PRIMARY_COLOR } from "./src/Style/styles";
+
+// ============================
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -31,14 +41,42 @@ const Stack = createNativeStackNavigator();
 // status bar
 
 const TabNavigator = () => {
+	const user = useSelector((state) => state.personalInfor);
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		setTimeout(() => {
+			dispatch(setStart());
+		}, 1000);
+	}, []);
+
+	if (user.isLoading) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					alignItems: "center",
+					backgroundColor: "#820b0f",
+				}}
+			>
+				<LottieView
+					style={{ width: 280, height: 280, backgroundColor: "#820b0f" }}
+					source={require("./src/data/34590-movie-theatre.json")}
+					autoPlay
+					loop
+				/>
+			</View>
+		);
+	}
 	return (
 		<Tab.Navigator
 			screenOptions={{
 				tabBarStyle: {
-					backgroundColor: "white",
+					backgroundColor: "black",
 				},
-				tabBarActiveTintColor: "black",
-				tabBarInactiveTintColor: "#DADADA",
+				tabBarActiveTintColor: "white",
+				tabBarInactiveTintColor: "#555555",
 				tabBarShowLabel: false,
 			}}
 		>
@@ -80,7 +118,7 @@ const TabNavigator = () => {
 				name="DateTest"
 				component={DateSlider}
 				options={{
-					headerShown: true,
+					headerShown: false,
 					tabBarIcon: ({ color }) => <Icon4 name="user" size={25} color={color} />,
 				}}
 			/>
@@ -91,7 +129,7 @@ const TabNavigator = () => {
 export default function App() {
 	const styleTypes = ["default", "dark-content", "light-content"];
 	const [visibleStatusBar, setVisibleStatusBar] = useState(false);
-	const [styleStatusBar, setStyleStatusBar] = useState(styleTypes[1]);
+	const [styleStatusBar, setStyleStatusBar] = useState(styleTypes[2]);
 
 	return (
 		<Provider store={store}>
@@ -143,13 +181,13 @@ export default function App() {
 							options={{
 								headerShown: true,
 								headerStyle: {
-									backgroundColor: "white",
+									backgroundColor: "#151515",
 								},
 								headerTitleStyle: {
-									color: "black",
+									color: MAIN_COLOR_TEXT,
 								},
 								headerBackTitle: "",
-								headerTintColor: "black",
+								headerTintColor: MAIN_COLOR_TEXT,
 							}}
 						/>
 						<Stack.Screen

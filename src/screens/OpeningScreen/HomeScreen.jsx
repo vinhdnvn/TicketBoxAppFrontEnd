@@ -18,21 +18,44 @@ import Finding from "react-native-vector-icons/Entypo";
 import { useSelector, useDispatch } from "react-redux";
 //  useDispatch : gọi hành động thay đổi state
 //  useSelector : lấy state từ store
-import { loginUser } from "../../Redux/Actions/updateAction";
+import { setStart } from "../../Redux/Actions/updateAction";
 import { useEffect } from "react";
-
+import { MAIN_COLOR_TEXT, SECONDARY_COLOR_TEXT } from "../../Style/styles";
+import LottieView from "lottie-react-native";
 // =========================================
 
 const HomeScreen = ({ navigation }) => {
 	const loginUserData = useSelector((state) => state.personalInfor);
 	const [isTokken, setIsTokken] = useState("");
-	const dispatch = useDispatch();
 	const route = useRoute();
 	// create useEffect to console log loginUserData
-	useEffect(() => {
-		console.log(loginUserData);
-	}, []);
+	const user = useSelector((state) => state.personalInfor);
+	const dispatch = useDispatch();
 
+	useEffect(() => {
+		setTimeout(() => {
+			dispatch(setStart());
+		}, 1000);
+	}, []);
+	if (user.isLoading) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					alignItems: "center",
+					backgroundColor: "#820b0f",
+				}}
+			>
+				<LottieView
+					style={{ width: 280, height: 280, backgroundColor: "#820b0f" }}
+					source={require("../../data/45732-cinema-animation.json")}
+					autoPlay
+					loop
+				/>
+			</View>
+		);
+	}
 	return (
 		<View style={styles.pageCont}>
 			{/* Header */}
@@ -75,7 +98,7 @@ const HomeScreen = ({ navigation }) => {
 						<View>
 							<Text
 								style={{
-									color: "black",
+									color: MAIN_COLOR_TEXT,
 									marginTop: 10,
 									fontWeight: "bold",
 									fontSize: 25,
@@ -83,7 +106,9 @@ const HomeScreen = ({ navigation }) => {
 							>
 								Hello {loginUserData.name}!
 							</Text>
-							<Text style={{ color: "gray", fontSize: 16 }}>Book your favourite film 👋</Text>
+							<Text style={{ color: SECONDARY_COLOR_TEXT, fontSize: 16 }}>
+								Book your favourite film 👋
+							</Text>
 						</View>
 						{/* use toucopacity with finding icon  */}
 						<View style={{ marginTop: 10, marginLeft: 40 }}>
@@ -95,7 +120,7 @@ const HomeScreen = ({ navigation }) => {
 								<Finding
 									name="magnifying-glass"
 									size={45}
-									style={{ borderRadius: "100%", opacity: 0.2 }}
+									style={{ borderRadius: "100%", opacity: 0.5, color: SECONDARY_COLOR_TEXT }}
 								/>
 							</TouchableOpacity>
 						</View>
@@ -116,7 +141,7 @@ const styles = StyleSheet.create({
 		height: "100%",
 		width: "100%",
 		flex: 1,
-		backgroundColor: "white",
+		backgroundColor: "black",
 	},
 
 	text: {
