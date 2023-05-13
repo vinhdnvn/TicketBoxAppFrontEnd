@@ -7,6 +7,7 @@ import { useState } from "react";
 import Heart from "react-native-vector-icons/AntDesign";
 // import play icon
 import PlayButton from "react-native-vector-icons/Entypo";
+import { PRIMARY_COLOR } from "../../Style/styles";
 
 const OwnTicket = () => {
 	const video = React.useRef(null);
@@ -176,7 +177,7 @@ const OwnTicket = () => {
 							navigation.navigate("Home");
 						}}
 						style={{
-							backgroundColor: "#rgba(255,119,0,0.8)",
+							backgroundColor: PRIMARY_COLOR,
 							alignItems: "center",
 							justifyContent: "center",
 							width: 100,

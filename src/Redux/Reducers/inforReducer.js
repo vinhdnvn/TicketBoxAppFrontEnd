@@ -1,6 +1,7 @@
-export const SET_USER = "SET_USER";
+export const SET_START = "SET_START";
 export const LOGOUT = "LOGOUT";
 export const LOGIN = "LOGIN";
+export const SET_ISLOADING_BACK = "SET_ISLOADING";
 
 const initialState = {
 	email: "",
@@ -8,14 +9,15 @@ const initialState = {
 	isAdmin: false,
 	image: "",
 	token: "",
+	isLoading: true,
 };
 
 export default function actionForReducer(state = initialState, payload) {
 	switch (payload.type) {
-		case SET_USER:
+		case SET_START:
 			return {
 				...state,
-				email: payload.email,
+				isLoading: false,
 			};
 		case LOGOUT:
 			return {
@@ -24,6 +26,8 @@ export default function actionForReducer(state = initialState, payload) {
 				name: "",
 				isAdmin: false,
 				image: null,
+				token: null,
+				isLoading: false,
 			};
 		case LOGIN:
 			return {
@@ -33,6 +37,12 @@ export default function actionForReducer(state = initialState, payload) {
 				isAdmin: payload.isAdmin,
 				image: payload.image,
 				token: payload.token,
+				isLoading: false,
+			};
+		case SET_ISLOADING_BACK:
+			return {
+				...state,
+				isLoading: true,
 			};
 		default:
 			return state;
