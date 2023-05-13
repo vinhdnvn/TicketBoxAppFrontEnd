@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
+// import View in react native
+
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import { useForm } from "react-hook-form";
-import { loginValidation } from "../../Validation/UserValidation";
-// const baseUrl = "http://192.168.1.47:5000";
-import { baseURL } from "../../api/client/private.client";
-import { login } from "../../api/api";
+import { useState } from "react";
+import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { baseURL } from "../api/client/private.client";
+import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// improt AntDesign
-import AntDesign from "react-native-vector-icons/AntDesign";
-
 // =========REDUX========
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../Redux/Actions/updateAction";
-import { set } from "date-fns";
-
+import { loginUser } from "../Redux/Actions/updateAction";
 // ======================
 
-const Login = () => {
+const HandleLogged = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
@@ -35,10 +29,6 @@ const Login = () => {
 
 	const [data, setData] = useState([]);
 
-	// validate user
-	const { register, handleSubmit, errors } = useForm({
-		validationSchema: loginValidation,
-	});
 	const onSubmit = (data) => {
 		console.log(data);
 		setIsLoading(true);
@@ -67,13 +57,6 @@ const Login = () => {
 			});
 			// save token by async storage
 			await AsyncStorage.setItem("token", response.data.token);
-
-			// dispatch action with email, image, isAdmin, name take from response.data
-			// setEmailData(response.data.email);
-			// setNameData(response.data.name);
-			// setImageData(response.data.image);
-			// setIsAdminData(response.data.isAdmin);
-
 			dispatch(
 				loginUser(
 					response.data.email,
@@ -105,44 +88,64 @@ const Login = () => {
 	}, []);
 
 	return (
-		<View style={styles.container}>
-			{/* create icon Home with navigation.replace("Home") in the top left of the screen*/}
-			<TouchableOpacity
-				style={{
-					position: "absolute",
-					top: 130,
-					left: 25,
-					zIndex: 20,
-					flexDirection: "row",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-				onPress={() => navigation.navigate("Home")}
-			>
-				<AntDesign name="home" size={26} color="black" />
-				<Text style={{ fontSize: 27, marginLeft: 10 }}>Home</Text>
-			</TouchableOpacity>
-
-			<Text style={styles.title}>Login</Text>
+		<View
+			style={{
+				width: "100%",
+				height: "100%",
+				flex: 1,
+				alignItems: "center",
+				justifyContent: "center",
+			}}
+		>
+			<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 25 }}>Login</Text>
 			<TextInput
-				style={styles.input}
-				onChangeText={onChangeEmailHandler}
-				value={email}
+				style={{
+					height: 40,
+					width: "80%",
+					borderColor: "gray",
+					backgroundColor: "#C0C0C0",
+					borderRadius: 10,
+					padding: 8,
+					marginBottom: 16,
+				}}
 				placeholder="Email"
 				keyboardType="email-address"
 				autoCapitalize="none"
+				onChangeText={onChangeEmailHandler}
 			/>
 			<TextInput
-				style={styles.input}
 				onChangeText={onChangePasswordHandler}
-				value={password}
+				style={{
+					height: 40,
+					width: "80%",
+					borderColor: "gray",
+					backgroundColor: "#C0C0C0",
+					borderRadius: 10,
+					padding: 8,
+					marginBottom: 16,
+				}}
 				placeholder="Password"
 				secureTextEntry
 				autoCapitalize="none"
 			/>
 			<View style={{ flexDirection: "column" }}>
-				<TouchableOpacity style={styles.button} onPress={handleLogin}>
-					<Text style={styles.buttonText}>Tiếp tục</Text>
+				<TouchableOpacity
+					onPress={handleLogin}
+					style={{
+						padding: 12,
+						borderRadius: 4,
+					}}
+				>
+					<Text
+						style={{
+							color: "#32CD32",
+							fontWeight: "bold",
+							textAlign: "center",
+							fontSize: 15,
+						}}
+					>
+						Tiếp tục
+					</Text>
 				</TouchableOpacity>
 				<View style={{ flexDirection: "row" }}>
 					<Text
@@ -157,12 +160,22 @@ const Login = () => {
 						Don't have account ?
 					</Text>
 					<TouchableOpacity
-						style={styles.button}
-						onPress={() => {
-							navigation.navigate("Register");
+						onPress={() => navigation.navigate("Register")}
+						style={{
+							padding: 12,
+							borderRadius: 4,
 						}}
 					>
-						<Text style={styles.buttonText}>Register</Text>
+						<Text
+							style={{
+								color: "#32CD32",
+								fontWeight: "bold",
+								textAlign: "center",
+								fontSize: 15,
+							}}
+						>
+							Register
+						</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -203,5 +216,4 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 	},
 });
-
-export default Login;
+export default HandleLogged;

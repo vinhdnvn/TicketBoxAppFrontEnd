@@ -14,8 +14,25 @@ import FeaturedScreen from "./FeaturedScreen";
 // import findding icon
 import Finding from "react-native-vector-icons/Entypo";
 
+// ================REDUX===================
+import { useSelector, useDispatch } from "react-redux";
+//  useDispatch : gọi hành động thay đổi state
+//  useSelector : lấy state từ store
+import { loginUser } from "../../Redux/Actions/updateAction";
+import { useEffect } from "react";
+
+// =========================================
+
 const HomeScreen = ({ navigation }) => {
+	const loginUserData = useSelector((state) => state.personalInfor);
+	const [isTokken, setIsTokken] = useState("");
+	const dispatch = useDispatch();
 	const route = useRoute();
+	// create useEffect to console log loginUserData
+	useEffect(() => {
+		console.log(loginUserData);
+	}, []);
+
 	return (
 		<View style={styles.pageCont}>
 			{/* Header */}
@@ -37,12 +54,21 @@ const HomeScreen = ({ navigation }) => {
 								}
 							>
 								<View>
-									<Image
-										style={{ height: 50, width: 50, borderRadius: "100%" }}
-										source={{
-											uri: route.params?.image,
-										}}
-									></Image>
+									{loginUserData.token ? (
+										<Image
+											style={{ height: 50, width: 50, borderRadius: "100%" }}
+											source={{
+												uri: loginUserData.image,
+											}}
+										></Image>
+									) : (
+										<Image
+											style={{ height: 50, width: 50, borderRadius: "100%" }}
+											source={{
+												uri: "https://img.freepik.com/free-icon/user_318-159711.jpg",
+											}}
+										></Image>
+									)}
 								</View>
 							</TouchableOpacity>
 						</View>
@@ -55,7 +81,7 @@ const HomeScreen = ({ navigation }) => {
 									fontSize: 25,
 								}}
 							>
-								Hello {route.params?.name}!
+								Hello {loginUserData.name}!
 							</Text>
 							<Text style={{ color: "gray", fontSize: 16 }}>Book your favourite film 👋</Text>
 						</View>

@@ -6,7 +6,12 @@ import movies from "../../data/movies";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-// import { TextInput } from "react-native-paper";
+
+import HandleLogged from "../../components/HandleLogged.jsx";
+// =============REDUX================
+import { useSelector, useDispatch } from "react-redux";
+import { loginUser } from "../../Redux/Actions/updateAction";
+// ===================================
 
 const DATA = movies;
 const FavouriteMovies = () => {
@@ -16,76 +21,86 @@ const FavouriteMovies = () => {
 		setSearchResults(results);
 	};
 	const navigation = useNavigation();
+	const loginUserData = useSelector((state) => state.personalInfor);
+	const dispatch = useDispatch();
+
+	// check if user is logged in in async storage and render another View
+	const [isLogged, setIsLogged] = useState(false);
+	const checkifLogged = async () => {
+		const token = await AsyncStorage.getItem("token");
+		if (token) {
+			setIsLogged(true);
+		}
+	};
 
 	useEffect(() => {
-		const checkIfLoggedIn = async () => {
-			const token = await AsyncStorage.getItem("token");
-			if (!token) {
-				navigation.navigate("Login");
-			}
-		};
-		checkIfLoggedIn();
+		checkifLogged();
+		console.log(isLogged);
 	}, []);
+
 	return (
 		<View style={{ width: "100%", height: "100%" }}>
-			<View>{/* <SearchBar /> */}</View>
-			<ScrollView>
-				{/* =========== */}
-				{DATA.map((item, index) => {
-					return (
-						<View key={index} style={{ paddingHorizontal: 20, marginBottom: 80, marginTop: 20 }}>
-							<View style={{ backgroundColor: "white", borderRadius: 10 }}>
-								<View
-									style={{
-										flexDirection: "column",
-										paddingLeft: 20,
-										paddingTop: 20,
-										paddingBottom: 40,
-									}}
-								>
-									<Text
+			{loginUserData.token ? (
+				<ScrollView>
+					{/* =========== */}
+					{DATA.map((item, index) => {
+						return (
+							<View key={index} style={{ paddingHorizontal: 20, marginBottom: 80, marginTop: 20 }}>
+								<View style={{ backgroundColor: "white", borderRadius: 10 }}>
+									<View
 										style={{
-											fontWeight: "bold",
-											fontSize: 20,
-											marginVertical: 10,
+											flexDirection: "column",
+											paddingLeft: 20,
+											paddingTop: 20,
+											paddingBottom: 40,
 										}}
 									>
-										{item.title}
-									</Text>
-									<View style={{ width: 180 }}>
-										<Text style={{ color: "gray", fontSize: 12 }}>{item.types}</Text>
+										<Text
+											style={{
+												fontWeight: "bold",
+												fontSize: 20,
+												marginVertical: 10,
+											}}
+										>
+											{item.title}
+										</Text>
+										<View style={{ width: 180 }}>
+											<Text style={{ color: "gray", fontSize: 12 }}>{item.types}</Text>
+										</View>
+										<Text
+											style={{
+												fontSize: 20,
+												fontWeight: "bold",
+												marginVertical: 10,
+											}}
+										>
+											{item.price}
+										</Text>
+										<Image
+											style={{
+												borderRadius: "100",
+												width: 150,
+												height: 150,
+												resizeMode: "cover",
+												position: "absolute",
+												bottom: -40,
+												right: -10,
+											}}
+											source={{
+												uri: item.image,
+											}}
+										/>
 									</View>
-									<Text
-										style={{
-											fontSize: 20,
-											fontWeight: "bold",
-											marginVertical: 10,
-										}}
-									>
-										{item.price}
-									</Text>
-									<Image
-										style={{
-											borderRadius: "100",
-											width: 150,
-											height: 150,
-											resizeMode: "cover",
-											position: "absolute",
-											bottom: -40,
-											right: -10,
-										}}
-										source={{
-											uri: item.image,
-										}}
-									/>
 								</View>
 							</View>
-						</View>
-					);
-				})}
+						);
+					})}
 
-				{/* =========== */}
-			</ScrollView>
+					{/* =========== */}
+				</ScrollView>
+			) : (
+				<HandleLogged />
+			)}
 		</View>
 	);
 };
@@ -103,59 +118,20 @@ const exampleData = [
 	{ id: "10", name: "Kiwi" },
 ];
 
-// Search bar
-const SearchBar = () => {
-	const [search, setSearch] = useState("");
-
-	const renderItem = ({ item }) => {
-		return (
-			<View
-				style={{
-					backgroundColor: "#f9c2ff",
-					padding: 20,
-					marginHorizontal: 16,
-				}}
-			>
-				<Text>{item.name}</Text>
-			</View>
-		);
-	};
-
-	const filteredData = exampleData.filter((item) =>
-		item.name.toLowerCase().includes(search.toLowerCase())
-	);
-	return (
-		<View
-			style={{
-				flex: 1,
-				backgroundColor: "#fff",
-				padding: 15,
-				marginBottom: 30,
-			}}
-		>
-			<TextInput
-				style={{
-					height: 40,
-					borderWidth: 1,
-					borderRadius: 8,
-					paddingHorizontal: 16,
-					marginBottom: 16,
-				}}
-				placeholder="Search"
-				onChangeText={(text) => setSearch(text)}
-				value={search}
-			/>
-			<FlatList
-				data={filteredData}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.id}
-				contentContainerStyle={{
-					flexGrow: 1,
-					justifyContent: "center",
-				}}
-			/>
-		</View>
-	);
-};
+// const HandleLogged = () => {
+// 	return (
+// 		<View
+// 			style={{
+// 				width: "100%",
+// 				height: "100%",
+// 				flex: 1,
+// 				alignItems: "center",
+// 				justifyContent: "center",
+// 			}}
+// 		>
+// 			<Text>Login</Text>
+// 		</View>
+// 	);
+// };
 
 export default FavouriteMovies;
