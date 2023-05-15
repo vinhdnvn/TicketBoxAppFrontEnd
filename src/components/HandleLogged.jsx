@@ -6,7 +6,7 @@ import { useState } from "react";
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { baseURL } from "../api/client/private.client";
 import { useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // =========REDUX========
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../Redux/Actions/updateAction";
@@ -56,7 +56,7 @@ const HandleLogged = () => {
 				password,
 			});
 			// save token by async storage
-			await AsyncStorage.setItem("token", response.data.token);
+
 			dispatch(
 				loginUser(
 					response.data.email,

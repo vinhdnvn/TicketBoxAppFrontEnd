@@ -17,7 +17,6 @@ import { useNavigation } from "@react-navigation/native";
 // import CarouselSlider from "../../components/CarouselSlider";
 import movies from "../../data/movies";
 import { baseURL } from "../../api/client/private.client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import axios from "axios";
 import { MAIN_COLOR_TEXT } from "../../Style/styles";

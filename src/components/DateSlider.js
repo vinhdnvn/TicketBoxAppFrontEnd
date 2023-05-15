@@ -3,10 +3,6 @@ import { Button, StyleSheet, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 export default function DateSlider() {
-	useEffect(() => {
-		// You can control the ref programmatically, rather than using autoPlay
-		// animation.current?.play();
-	}, []);
 	const showToast = () => {
 		Toast.show({
 			type: "success",
@@ -37,7 +33,7 @@ export default function DateSlider() {
 		<View style={styles.animationContainer}>
 			{/* create TouchableOpacity to showToast */}
 			<Button title="Show Toast" onPress={showToast} />
-			<Toast ref={(ref) => Toast.setRef(ref)} />
+			<Toast />
 		</View>
 	);
 }

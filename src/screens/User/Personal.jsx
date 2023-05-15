@@ -26,10 +26,6 @@ const Personal = () => {
 
 	// create function to handle logout clear all ìnformation of user
 	const handleLogout = async () => {
-		//    print the item token stored in async storage
-		// console.log(await AsyncStorage.getItem("token"));
-		// await AsyncStorage.removeItem("token");
-		// navigation.navigate("Login");
 		dispatch(logoutUser());
 		navigation.navigate("Home");
 	};
