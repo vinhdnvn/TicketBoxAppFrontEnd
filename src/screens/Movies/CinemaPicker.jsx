@@ -20,7 +20,13 @@ import { baseURL } from "../../api/client/private.client";
 import { useEffect } from "react";
 import axios from "axios";
 import { MAIN_COLOR_TEXT } from "../../Style/styles";
+// REDUX
+import { useDispatch, useSelector } from "react-redux";
+import { setCinema } from "../../Redux/Actions/cinemaAction";
 const CinemaPicker = () => {
+	const dispatch = useDispatch();
+	const stateCinema = useSelector((state) => state.cinemaInfor);
+
 	const route = useRoute();
 	const [selectedDate, setSelectedDate] = useState("");
 	const [mall, setMall] = useState([]);
@@ -70,7 +76,7 @@ const CinemaPicker = () => {
 		>
 			<FlatList
 				contentContainerStyle={{ marginTop: "35%", justifyContent: "center" }}
-				data={cinemaData}
+				data={cinemaData.cinemas}
 				horizontal
 				keyExtractor={(item) => item._id}
 				showsHorizontalScrollIndicator={false}
@@ -82,12 +88,14 @@ const CinemaPicker = () => {
 								// console.log(item.tableData)
 								setMall(item.name);
 								setSeatsData(item.tableData);
+								dispatch(setCinema(item._id));
+
 								navigation.navigate("Theater", {
 									nameMovie: route.params.nameMovie,
 									tableSeats: item.tableData,
 									image: route.params.image,
 									nameTheater: item.name,
-									genre: route.params.genre,
+									gerne: route.params.gerne,
 									arraySeats: item.seats,
 								});
 							}}

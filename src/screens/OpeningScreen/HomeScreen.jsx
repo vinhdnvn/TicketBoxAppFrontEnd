@@ -22,6 +22,8 @@ import { setStart } from "../../Redux/Actions/updateAction";
 import { useEffect } from "react";
 import { MAIN_COLOR_TEXT, SECONDARY_COLOR_TEXT } from "../../Style/styles";
 import LottieView from "lottie-react-native";
+import Toast from "react-native-toast-message";
+import ToastSuccess from "../../Notifications/ToastSucess";
 // =========================================
 
 const HomeScreen = ({ navigation }) => {
@@ -31,31 +33,34 @@ const HomeScreen = ({ navigation }) => {
 	// create useEffect to console log loginUserData
 	const user = useSelector((state) => state.personalInfor);
 	const dispatch = useDispatch();
+	const loggingState = useSelector((state) => state.loggingInfor);
+	const showToast = () => {
+		Toast.show({
+			type: "success",
 
+			text1: "Hello",
+			text2: "This is some something 👋",
+			visibilityTime: 2000,
+			autoHide: true,
+		});
+	};
+	const toastConfig = {
+		success: (internalState) => (
+			// create modal view to message login success
+			<ToastSuccess />
+		),
+	};
 	useEffect(() => {
 		setTimeout(() => {
 			dispatch(setStart());
 		}, 1000);
 	}, []);
-	if (user.isLoading) {
-		return (
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					backgroundColor: "#820b0f",
-				}}
-			>
-				<LottieView
-					style={{ width: 280, height: 280, backgroundColor: "#820b0f" }}
-					source={require("../../data/45732-cinema-animation.json")}
-					autoPlay
-					loop
-				/>
-			</View>
-		);
-	}
+	useEffect(() => {
+		if (loggingState.isLogging) {
+			showToast();
+		}
+	}, []);
+
 	return (
 		<View style={styles.pageCont}>
 			{/* Header */}
@@ -79,14 +84,14 @@ const HomeScreen = ({ navigation }) => {
 								<View>
 									{loginUserData.token ? (
 										<Image
-											style={{ height: 50, width: 50, borderRadius: "100%" }}
+											style={{ height: 50, width: 50, borderRadius: "100%", zIndex: 5 }}
 											source={{
 												uri: loginUserData.image,
 											}}
 										></Image>
 									) : (
 										<Image
-											style={{ height: 50, width: 50, borderRadius: "100%" }}
+											style={{ height: 50, width: 50, borderRadius: "100%", zIndex: 5 }}
 											source={{
 												uri: "https://img.freepik.com/free-icon/user_318-159711.jpg",
 											}}
@@ -114,7 +119,7 @@ const HomeScreen = ({ navigation }) => {
 						<View style={{ marginTop: 10, marginLeft: 40 }}>
 							<TouchableOpacity
 								onPress={() => {
-									console.log(route.params?.token);
+									console.log(loginUserData);
 								}}
 							>
 								<Finding
@@ -131,6 +136,7 @@ const HomeScreen = ({ navigation }) => {
 					<FeaturedScreen />
 				</View>
 			</ScrollView>
+			<Toast config={toastConfig} />
 		</View>
 	);
 };

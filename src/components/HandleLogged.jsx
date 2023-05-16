@@ -1,6 +1,6 @@
 // import View in react native
 
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { useState } from "react";
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from "react-native";
@@ -10,30 +10,18 @@ import { useEffect } from "react";
 // =========REDUX========
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../Redux/Actions/updateAction";
+import { setLogging } from "../Redux/Actions/loggedAction";
+
 // ======================
 
 const HandleLogged = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [message, setMessage] = useState("");
+	const [emailError, setEmailError] = useState("");
+	const [passwordError, setPasswordError] = useState("");
 	const navigation = useNavigation();
 	const [isLoading, setIsLoading] = useState(false);
-	const [isError, setIsError] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [userInfor, setUserInfor] = useState({});
-
-	const [emailData, setEmailData] = useState("");
-	const [nameData, setNameData] = useState("");
-	const [imageData, setImageData] = useState("");
-	const [isAdminData, setIsAdminData] = useState(false);
-
-	const [data, setData] = useState([]);
-
-	const onSubmit = (data) => {
-		console.log(data);
-		setIsLoading(true);
-	};
-
 	const onChangeEmailHandler = (email) => {
 		setEmail(email);
 	};
@@ -41,8 +29,37 @@ const HandleLogged = () => {
 		setPassword(password);
 	};
 
+	// create validate for email
+	const validateEmail = (email) => {
+		const re = /\S+@\S+\.\S+/;
+		if (!re.test(email)) {
+			setEmailError("Email address is invalid");
+			return false;
+		} else if (email.length === 0) {
+			setEmailError("Email is required");
+			return false;
+		}
+		setEmailError("");
+		return true;
+	};
+	// create validate for password ( morethan 6 characters)
+	const validatePassword = (password) => {
+		if (password.length <= 4) {
+			setPasswordError("Password must be at least 6 characters");
+			return false;
+		}
+		// else password ==0 => error
+		else if (password.length === 0) {
+			setPasswordError("Password is required");
+			return false;
+		}
+		setPasswordError("");
+		return true;
+	};
+
 	const loginUserData = useSelector((state) => state.personalInfor);
 	const dispatch = useDispatch();
+	const loggingState = useSelector((state) => state.loggingInfor);
 
 	const handleLogin = async () => {
 		if (email === "" || password === "") {
@@ -59,6 +76,7 @@ const HandleLogged = () => {
 
 			dispatch(
 				loginUser(
+					response.data._id,
 					response.data.email,
 					response.data.name,
 					response.data.isAdmin,
@@ -66,12 +84,18 @@ const HandleLogged = () => {
 					response.data.token
 				)
 			);
+			dispatch(setLogging());
 
 			if (response.status === 200) {
 				// alert("Login successfully");
 				setUserInfor(response.data.user);
 				setIsLoading(false);
-				navigation.navigate("Account");
+				navigation.dispatch(
+					CommonActions.reset({
+						index: 0,
+						routes: [{ name: "Home" }],
+					})
+				);
 				// navigation.navigate('Home', { user: response.data.user });
 			} else {
 				alert("Login failed");
@@ -79,7 +103,6 @@ const HandleLogged = () => {
 		} catch (error) {
 			console.log(error);
 			alert("Network");
-			setIsLoading(false);
 		}
 	};
 
@@ -89,21 +112,21 @@ const HandleLogged = () => {
 		}, 200);
 	}, []);
 
-	if (loginUserData.isLoading) {
-		return (
-			<View
-				style={{
-					width: "100%",
-					height: "100%",
-					flex: 1,
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				<Text> Loading</Text>
-			</View>
-		);
-	}
+	// if (loginUserData.isLoading) {
+	// 	return (
+	// 		<View
+	// 			style={{
+	// 				width: "100%",
+	// 				height: "100%",
+	// 				flex: 1,
+	// 				alignItems: "center",
+	// 				justifyContent: "center",
+	// 			}}
+	// 		>
+	// 			<Text> Loading</Text>
+	// 		</View>
+	// 	);
+	// }
 
 	return (
 		<View
@@ -115,7 +138,7 @@ const HandleLogged = () => {
 				justifyContent: "center",
 			}}
 		>
-			<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 25 }}>Login</Text>
+			<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 35 }}>Login</Text>
 			<TextInput
 				style={{
 					height: 40,
@@ -131,6 +154,7 @@ const HandleLogged = () => {
 				autoCapitalize="none"
 				onChangeText={onChangeEmailHandler}
 			/>
+
 			<TextInput
 				onChangeText={onChangePasswordHandler}
 				style={{
@@ -146,9 +170,17 @@ const HandleLogged = () => {
 				secureTextEntry
 				autoCapitalize="none"
 			/>
+			<Text style={{ color: "red", marginBottom: 8 }}>{emailError}</Text>
+			<Text style={{ color: "red", marginBottom: 8 }}>{passwordError}</Text>
 			<View style={{ flexDirection: "column" }}>
 				<TouchableOpacity
-					onPress={handleLogin}
+					onPress={() => {
+						// if validate email and password fasle => return
+						if (!validateEmail(email) || !validatePassword(password)) {
+							return;
+						}
+						handleLogin();
+					}}
 					style={{
 						padding: 12,
 						borderRadius: 4,

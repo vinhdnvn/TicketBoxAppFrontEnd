@@ -4,6 +4,7 @@ export const LOGIN = "LOGIN";
 export const SET_ISLOADING_BACK = "SET_ISLOADING";
 
 const initialState = {
+	_id: "",
 	email: "",
 	name: "",
 	isAdmin: false,
@@ -32,6 +33,7 @@ export default function actionForReducer(state = initialState, payload) {
 		case LOGIN:
 			return {
 				...state,
+				_id: payload._id,
 				email: payload.email,
 				name: payload.name,
 				isAdmin: payload.isAdmin,

@@ -20,6 +20,67 @@ const Register = () => {
 	const [dateOfBirth, setDateOfBirth] = useState(new Date());
 	const [showDatePicker, setShowDatePicker] = useState(false);
 
+	const [emailError, setEmailError] = useState("");
+	const [passwordError, setPasswordError] = useState("");
+	const [nameError, setNameError] = useState("");
+	const [phoneError, setPhoneError] = useState("");
+	const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+	const validateEmail = (email) => {
+		const re = /\S+@\S+\.\S+/;
+		if (!re.test(email)) {
+			setEmailError("Email address is invalid");
+			return false;
+		} else if (email.length === 0) {
+			setEmailError("Email is required");
+			return false;
+		}
+		setEmailError("");
+		return true;
+	};
+
+	const validatePassword = (password, confirmPassword) => {
+		if (password.length <= 4) {
+			setPasswordError("At least 6 characters");
+			return false;
+		}
+		// else password ==0 => error
+		else if (password.length === 0) {
+			setPasswordError("Password is required");
+			return false;
+		}
+		// if passwrd != confirm password => error
+		else if (password !== confirmPassword) {
+			setConfirmPasswordError("Password is not match");
+			return false;
+		}
+		setPasswordError("");
+		setConfirmPasswordError("");
+		return true;
+	};
+
+	const validateName = (name) => {
+		if (name.length === 0) {
+			setNameError("Name is required");
+			return false;
+		}
+
+		setNameError("");
+		return true;
+	};
+
+	const validatePhone = (phone) => {
+		if (phone.length === 0) {
+			setPhoneError("Phone is required");
+			return false;
+		} else if (phone.length !== 10) {
+			setPhoneError("Phone number must be 10 characters");
+			return false;
+		}
+		setPhoneError("");
+		return true;
+	};
+
 	const handleDateOfBirthChange = (event, selectedDate) => {
 		const currentDate = selectedDate || dateOfBirth;
 		setShowDatePicker(Platform.OS === "ios");
@@ -34,30 +95,40 @@ const Register = () => {
 	const navigation = useNavigation();
 
 	const handleRegister = async () => {
-		// Handle register logic here
-		try {
-			const response = await axios.post(`${baseUrl}/auth/signup`, {
-				email,
-				name,
-				dateOfBirth: dateOfBirth.toLocaleDateString("en-GB", {
-					day: "numeric",
-					month: "numeric",
-					year: "numeric",
-				}),
-				phone,
-				password,
-			});
-			console.log(response.data);
-			if (response.status === 200) {
-				alert("Register successfully");
-				navigation.navigate("Login");
-			} else {
-				alert("Register failed, please try again!");
-			}
-		} catch (error) {
-			console.log(error);
-			alert("Register failed, please try again!");
+		// check validate false => return
+		if (
+			!validateEmail(email) ||
+			!validatePassword(password, confirmPassword) ||
+			!validateName(name) ||
+			!validatePhone(phone)
+		) {
+			return;
 		}
+
+		// Handle register logic here
+		// try {
+		// 	const response = await axios.post(`${baseUrl}/auth/signup`, {
+		// 		email,
+		// 		name,
+		// 		dateOfBirth: dateOfBirth.toLocaleDateString("en-GB", {
+		// 			day: "numeric",
+		// 			month: "numeric",
+		// 			year: "numeric",
+		// 		}),
+		// 		phone,
+		// 		password,
+		// 	});
+		// 	console.log(response.data);
+		// 	if (response.status === 200) {
+		// 		alert("Register successfully");
+		// 		navigation.navigate("Login");
+		// 	} else {
+		// 		alert("Register failed, please try again!");
+		// 	}
+		// } catch (error) {
+		// 	console.log(error);
+		// 	alert("Register failed, please try again!");
+		// }
 	};
 	const logText = () => {
 		console.log("logText");
@@ -78,17 +149,25 @@ const Register = () => {
 
 	return (
 		<View style={{ width: "100%", height: "100%" }}>
-			<View style={{ width: "100%", height: 150, backgroundColor: "rgb(45, 194, 117)" }}>
-				<TouchableOpacity onPress={() => navigation.goBack()}>
-					<Back
-						name="arrow-left"
-						size={30}
-						color="white"
-						style={{ marginTop: 50, marginLeft: 20 }}
-					></Back>
-				</TouchableOpacity>
+			<TouchableOpacity
+				style={{ flexDirection: "row", alignItems: "center" }}
+				onPress={() => navigation.goBack()}
+			>
+				<Back
+					name="arrow-left"
+					size={30}
+					color="black"
+					style={{ marginTop: 50, marginLeft: 20 }}
+				></Back>
+				<Text style={{ marginTop: 50, fontWeight: "500" }}>Back</Text>
+			</TouchableOpacity>
+			<View style={{ width: "70%", marginHorizontal: 20, marginTop: 20 }}>
+				<Text style={{ fontSize: 25, fontWeight: "bold" }}>Create new account</Text>
+				<Text style={{ fontSize: 15, color: "gray" }}>
+					We really appreciate that you are going to join us !
+				</Text>
 			</View>
-			<Image style={{ marginTop: -10, width: "100%", resizeMode: "contain" }} source={imageTop} />
+
 			{/* input for insert information user to register */}
 			<ScrollView style={{ width: "100%" }}>
 				<View style={{ flexDirection: "column", height: "100%" }}>
@@ -98,6 +177,9 @@ const Register = () => {
 						<View style={{ flexDirection: "row", marginTop: 20, marginLeft: 20 }}>
 							<Text style={{ fontSize: 15, fontWeight: "bold", color: "rgb(45, 194, 117)" }}>
 								Email
+							</Text>
+							<Text style={{ fontSize: 15, fontWeight: "bold", color: "red", marginLeft: 10 }}>
+								{emailError}
 							</Text>
 						</View>
 						{/* create input for email */}
@@ -126,6 +208,9 @@ const Register = () => {
 						<View style={{ flexDirection: "row", marginTop: 20, marginLeft: 20 }}>
 							<Text style={{ fontSize: 15, fontWeight: "bold", color: "rgb(45, 194, 117)" }}>
 								First Name
+							</Text>
+							<Text style={{ fontSize: 15, fontWeight: "bold", color: "red", marginLeft: 10 }}>
+								{nameError}
 							</Text>
 						</View>
 						{/* create input for First Name */}
@@ -199,6 +284,9 @@ const Register = () => {
 							<Text style={{ fontSize: 15, fontWeight: "bold", color: "rgb(45, 194, 117)" }}>
 								Phone
 							</Text>
+							<Text style={{ fontSize: 15, fontWeight: "bold", color: "red", marginLeft: 10 }}>
+								{phoneError}
+							</Text>
 						</View>
 						{/* create input for phone user */}
 						<View style={{ flexDirection: "row", marginTop: 10, marginLeft: 20 }}>
@@ -226,6 +314,9 @@ const Register = () => {
 						<View style={{ flexDirection: "row", marginTop: 20, marginLeft: 20 }}>
 							<Text style={{ fontSize: 15, fontWeight: "bold", color: "rgb(45, 194, 117)" }}>
 								Password
+							</Text>
+							<Text style={{ fontSize: 15, fontWeight: "bold", color: "red", marginLeft: 10 }}>
+								{passwordError}
 							</Text>
 						</View>
 						{/* create input for password */}
@@ -255,6 +346,9 @@ const Register = () => {
 							<Text style={{ fontSize: 15, fontWeight: "bold", color: "rgb(45, 194, 117)" }}>
 								Confirm Password
 							</Text>
+							<Text style={{ fontSize: 15, fontWeight: "bold", color: "red", marginLeft: 10 }}>
+								{passwordError}
+							</Text>
 						</View>
 						{/* create input for confirm password */}
 						<View style={{ flexDirection: "row", marginTop: 10, marginLeft: 20 }}>
@@ -279,7 +373,7 @@ const Register = () => {
 					</View>
 				</View>
 			</ScrollView>
-			<View style={{ justifyContent: "center", alignItems: "center", marginBottom: 22 }}>
+			<View style={{ justifyContent: "center", alignItems: "center", marginBottom: 60 }}>
 				<TouchableOpacity
 					onPress={() => handleRegister()}
 					style={{

@@ -30,29 +30,31 @@ const FeaturedScreen = () => {
 	const navigation = useNavigation();
 	const DATA = movies;
 	const [movie, setMovies] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	const loginUserData = useSelector((state) => state.personalInfor);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		isLoading;
 		axios
 			.get(`${baseURL}/api/movies`)
 			.then((res) => {
 				setMovies(res.data.movies);
-				// alert("success");
 			})
 			.catch((err) => {
 				console.log(err);
 			});
+		setIsLoading(false);
 	}, []);
 
-	// if (loginUserData.isLoading) {
-	// 	return (
-	// 		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-	// 			<Text>loading</Text>
-	// 		</View>
-	// 	);
-	// }
+	if (isLoading) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<Text>loading</Text>
+			</View>
+		);
+	}
 
 	return (
 		<View style={{ width: "100%", height: "100%" }}>
@@ -117,7 +119,7 @@ const PopularList = ({ DATA }) => {
 	const popular = DATA.filter((film) => film.popular == true);
 	return (
 		<View style={{ paddingHorizontal: 22 }}>
-			{popular.map((item) => (
+			{DATA.map((item) => (
 				<View
 					style={{
 						width: 100,
