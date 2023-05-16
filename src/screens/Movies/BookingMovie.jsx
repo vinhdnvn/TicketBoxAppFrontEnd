@@ -16,7 +16,7 @@ import { Video } from "expo-av";
 import React from "react";
 import Back from "react-native-vector-icons/AntDesign";
 import cinema from "../../data/cinema";
-import PlayButton from "react-native-vector-icons/AntDesign";
+import PlayButton from "react-native-vector-icons/Entypo";
 // import base url from backend
 import axios, * as others from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -138,7 +138,11 @@ const BookingMovie = () => {
 					}
 					style={{ opacity: 0.1 }}
 				>
-					<PlayButton name="playcircleo" size={50} color="white" />
+					<PlayButton
+						name={status.isPlaying ? "controller-paus" : "controller-play"}
+						size={50}
+						color="white"
+					/>
 				</TouchableOpacity>
 			</View>
 
@@ -257,7 +261,7 @@ const BookingMovie = () => {
 								navigation.navigate("Please choose 1 cinema !", {
 									nameMovie: route.params.nameMovie,
 									image: route.params.image,
-									genre: route.params.genre,
+									gerne: route.params.gerne,
 								});
 								video.current.pauseAsync();
 								console.log(token);

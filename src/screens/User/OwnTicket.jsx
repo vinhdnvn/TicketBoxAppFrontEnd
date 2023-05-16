@@ -88,7 +88,8 @@ const OwnTicket = () => {
 			>
 				<PlayButton
 					style={{ opacity: 0.3 }}
-					name="controller-play"
+					// if video play then icon will change to pause icon "controller-paus"
+					name={status.isPlaying ? "controller-paus" : "controller-play"}
 					size={32}
 					color={"#rgba(255,255,255,0.8)"}
 				/>

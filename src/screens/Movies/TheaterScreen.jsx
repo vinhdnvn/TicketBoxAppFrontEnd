@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { CommonActions, useNavigation, useRoute } from "@react-navigation/native";
 import {
 	FlatList,
 	Pressable,
@@ -11,7 +11,7 @@ import {
 	Modal,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { MovieCards } from "./Context";
 import { addDays, eachDayOfInterval, eachWeekOfInterval, format, subDays } from "date-fns";
 import React, { useState } from "react";
@@ -19,6 +19,9 @@ import PagerView from "react-native-pager-view";
 import BackModal from "react-native-vector-icons/AntDesign";
 import axios from "axios";
 import { baseURL } from "../../api/client/private.client";
+import { PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
+// ==========REDUX================
+import { useDispatch, useSelector } from "react-redux";
 const dates = eachWeekOfInterval(
 	{
 		start: subDays(new Date(), 14),
@@ -38,6 +41,11 @@ const dates = eachWeekOfInterval(
 }, []);
 
 const TheaterScreen = () => {
+	const dispatch = useDispatch();
+	const stateCinema = useSelector((state) => state.cinemaInfor);
+	const userState = useSelector((state) => state.personalInfor);
+	console.log(stateCinema, "stateCinema");
+	console.log(userState, "userState");
 	const route = useRoute();
 	const { seats, setSeats } = useContext(MovieCards);
 	const onSeatSelect = (item) => {
@@ -48,27 +56,25 @@ const TheaterScreen = () => {
 		} else {
 			setSeats([...seats, item.name]);
 		}
-
-		// change the isBooked value to true and click again to false
-		// item.isBooked ? (item.isBooked = true) : (item.isBooked = false);
 	};
 
 	// console.log(seats, "you pressed on");
 
 	// book ticket button
 	const [isModalVisible, setModalVisible] = useState(false);
+	const navigation = useNavigation();
 
-	const toggleModal = () => {
+	const toggleModal = async () => {
 		setModalVisible(!isModalVisible);
 	};
 	// ======
 
 	// feee payyying
-	const fee = 87;
+	const fee = 12;
 	const noOfSeats = seats.length;
 	const total = seats.length > 0 ? fee + noOfSeats * 240 : 0;
-	// console.log(total);
-	// console.log(seats, "seats selected");
+	console.log(total);
+	console.log("seats ", seats);
 
 	// ======for Date SLider ==========
 	const [selectedDate, setSelectedDate] = useState(null);
@@ -80,28 +86,107 @@ const TheaterScreen = () => {
 	const handleTimeSelect = (time) => {
 		setSelectedTime(time);
 	};
-	// fetch api create booking
-	// const hanldeCreateBooking = () => {
-	// 	axios
-	// 		.post(`${baseURL}/api/booking`, {
 
-	// 			bookingDate: selectedDate,
-	// 			bookingTime: selectedTime,
-	// 			seat: seats,
-	// 			movie: route.params.id,
-	// 		})
-	// 		.then((res) => {
-	// 			console.log(res.data);
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// }
+	const [modalFirstVisible, setModalFirstVisible] = useState(true);
+	const handleCloseFirstModal = () => {
+		setModalFirstVisible(false);
+	};
+
+	// ======= for call API Booking =========
+	const finishBooking = async () => {
+		console.log("finish booking");
+		// log nameMovie
+		// console.log(route.params.nameMovie);
+		// console.log(route.params.gerne);
+		// console.log(route.params.nameTheater);
+		// console.log(selectedDate);
+		// console.log(selectedTime);
+		// console.log(seats.toString());
+		// console.log(`${seats.length * fee + 1.2}`);
+		// console.log(userState._id);
+		// console.log(`${baseURL}/api/bookings/${userState._id}`);
+		try {
+			await axios.post(`${baseURL}/api/bookings/${userState._id}`, {
+				movie: route.params.nameMovie,
+				gerne: route.params.gerne,
+				cinema: route.params.nameTheater,
+				date: selectedDate,
+				time: selectedTime,
+				// save seats convert to string character not array
+				seat: seats.toString(),
+				// result of seats.length * fee + 1.2
+				price: `${seats.length * fee + 1.2}`,
+			});
+			alert("Booking success");
+			navigation.dispatch(
+				CommonActions.navigate({
+					name: "Home",
+				})
+			);
+		} catch (error) {
+			console.log(error);
+			alert("Booking failed");
+		}
+
+		try {
+			const response = await axios.put(`${baseURL}/api/cinemas/${stateCinema._id}/seats`, {
+				seats: seats,
+			});
+			// set seat seleted to empty
+			setSeats([]);
+		} catch (error) {
+			console.log(error);
+			alert("error");
+		}
+	};
 
 	return (
 		<View style={{ width: "100%", height: "100%", backgroundColor: "white" }}>
+			<Modal visible={modalFirstVisible} animationType="slide">
+				<View
+					style={{
+						justifyContent: "center",
+						alignItems: "center",
+						//   transparent 100%
+					}}
+				>
+					<View
+						style={{
+							width: "100%",
+							height: "100%",
+							// backgroundColor: "rgba(11,11,11,0.5)",
+							flexDirection: "column",
+							borderRadius: 10,
+							justifyContent: "center",
+							alignItems: "center",
+							// transparent: true,
+						}}
+					>
+						<Text style={{ fontSize: 18 }}>Please select Date first !</Text>
+						{/* create touchable opacity to close modal */}
+						<TouchableOpacity
+							// create style for touchable opacity
+							style={{
+								width: 100,
+								height: 50,
+								backgroundColor: PRIMARY_COLOR,
+								borderRadius: 10,
+								justifyContent: "center",
+								alignItems: "center",
+								marginTop: 20,
+							}}
+							onPress={handleCloseFirstModal}
+						>
+							<Text style={{ color: SECONDARY_COLOR_TEXT }}>OK</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</Modal>
 			<View style={{ alignItems: "center" }}>
+				<Text style={{ marginTop: 10, fontWeight: "500" }}>Please choose date first !</Text>
 				{/* <Text style={{ color: "white" }}> {route.params.title}</Text> */}
-				<Text style={{ color: "black", fontSize: 15, fontWeight: "700" }}>{route.params.mall}</Text>
-				<Text style={{ color: "gray", fontSize: 12 }}>{route.params.timeSelected}</Text>
+				{/* <Text style={{ color: "black", fontSize: 15, fontWeight: "700" }}>{route.params.mall}</Text>
+				<Text style={{ color: "gray", fontSize: 12 }}>{route.params.timeSelected}</Text> */}
 				{/* date picker */}
 				<DateSlider onDateSelect={handleDateSelect} />
 
@@ -117,8 +202,10 @@ const TheaterScreen = () => {
 					data={route.params.arraySeats}
 					renderItem={({ item }) => (
 						<Pressable
-							disabled={item.isBooked}
-							onPress={() => onSeatSelect(item)}
+							disabled={!selectedDate && !selectedTime}
+							onPress={() => {
+								onSeatSelect(item);
+							}}
 							style={{
 								margin: 10,
 								borderRadius: 10,
@@ -158,7 +245,7 @@ const TheaterScreen = () => {
 											padding: 10,
 											color: "black",
 											borderRadius: 10,
-											backgroundColor: "#BCB9B9",
+											backgroundColor: selectedDate && selectedTime ? "#BCB9B9" : "#F6428A",
 										}}
 									>
 										{item.name}
@@ -202,8 +289,12 @@ const TheaterScreen = () => {
 					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Selected</Text>
 				</View>
 				<View style={{ flexDirection: "row", alignItems: "center" }}>
-					<FontAwesome name="circle" size={24} color="black" />
+					<FontAwesome name="circle" size={24} color="#21F090" />
 					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Reserved</Text>
+				</View>
+				<View style={{ flexDirection: "row", alignItems: "center" }}>
+					<FontAwesome name="circle" size={24} color="#F6428A" />
+					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Disabled</Text>
 				</View>
 			</View>
 			<View
@@ -326,7 +417,7 @@ const TheaterScreen = () => {
 											<Text
 												style={{ color: "black", fontWeight: "500", opacity: 0.8, marginTop: 8 }}
 											>
-												{route.params.genre}
+												{route.params.gerne}
 											</Text>
 										</View>
 										{/* time date ref */}
@@ -384,7 +475,9 @@ const TheaterScreen = () => {
 											}}
 										>
 											<Text style={{ fontSize: 18 }}>Regular Seats:</Text>
-											<Text style={{ fontSize: 18 }}>(Cost) x 3</Text>
+											<Text style={{ fontSize: 18 }}>
+												{/* cost x3  */}${fee} x {seats.length}
+											</Text>
 										</View>
 										<Text style={{ marginTop: 10 }}>
 											--------------------------------------------------
@@ -501,6 +594,7 @@ const TheaterScreen = () => {
 										</View>
 										{/* button */}
 										<TouchableOpacity
+											onPress={finishBooking}
 											style={{
 												width: 300,
 												height: 50,
@@ -513,18 +607,12 @@ const TheaterScreen = () => {
 											<Text
 												style={{ alignSelf: "center", marginTop: 10, fontSize: 20, color: "white" }}
 											>
-												Confirm | Total: {total} $
+												Confirm | Total: {fee * seats.length + 1.2}$
+												{/* result : fee * seats.length */}
 											</Text>
 										</TouchableOpacity>
 									</View>
 								</View>
-
-								{/* <Text>{route.params.nameMovie}</Text>
-								<Text>{route.params.nameTheater}</Text>
-								<Text>{seats.join(" ")}</Text>
-								<Text>{seats.length}</Text>
-								<Text>{selectedDate}</Text>
-								<Text>{selectedTime}</Text> */}
 							</View>
 						</View>
 					</Modal>
@@ -559,7 +647,7 @@ const DateSlider = (props) => {
 									console.log(selectedDate);
 									onDateSelect(selectedDate);
 								};
-								const buttonColor = isPressed ? "#E43838" : "#E8DFDF";
+								const buttonColor = isPressed ? "#E43838" : "#F5F5F5";
 								const txtColor = isPressed ? "white" : "black";
 								const txt = format(day, "EEE");
 								return (
@@ -621,6 +709,7 @@ const TimesSlider = (props) => {
 				<ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
 					{timeOptions.map((time) => (
 						<TouchableOpacity
+							// disabled={isSelectDate}
 							key={time}
 							onPress={() => {
 								setSelectedTime(time);
@@ -652,7 +741,7 @@ const styles = StyleSheet.create({
 		padding: 8,
 		marginRight: 20,
 		borderRadius: 20,
-		backgroundColor: "#F5F5F5",
+		backgroundColor: "#E8DFDF",
 		alignItems: "center",
 		justifyContent: "center",
 	},

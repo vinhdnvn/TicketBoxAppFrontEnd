@@ -24,7 +24,7 @@ export const updateSetUser = (email) => async (dispatch) => {
 	}
 };
 
-export const loginUser = (email, name, isAdmin, image, token) => async (dispatch) => {
+export const loginUser = (_id, email, name, isAdmin, image, token) => async (dispatch) => {
 	try {
 		console.log("Đang đăng nhập.....");
 		await new Promise((resolve, reject) => {
@@ -36,6 +36,7 @@ export const loginUser = (email, name, isAdmin, image, token) => async (dispatch
 		// 2. cập nhật thông tin của inforReducer trong store
 		dispatch({
 			type: LOGIN,
+			_id: _id,
 			email: email,
 			name: name,
 			isAdmin: isAdmin,
