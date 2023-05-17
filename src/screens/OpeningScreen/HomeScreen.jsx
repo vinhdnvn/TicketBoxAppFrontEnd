@@ -26,7 +26,7 @@ import Toast from "react-native-toast-message";
 import ToastSuccess from "../../Notifications/ToastSucess";
 // =========================================
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = React.memo(({ navigation }) => {
 	const loginUserData = useSelector((state) => state.personalInfor);
 	const [isTokken, setIsTokken] = useState("");
 	const route = useRoute();
@@ -34,6 +34,7 @@ const HomeScreen = ({ navigation }) => {
 	const user = useSelector((state) => state.personalInfor);
 	const dispatch = useDispatch();
 	const loggingState = useSelector((state) => state.loggingInfor);
+	const bookingState = useSelector((state) => state.bookingInfor);
 	const showToast = () => {
 		Toast.show({
 			type: "success",
@@ -44,12 +45,14 @@ const HomeScreen = ({ navigation }) => {
 			autoHide: true,
 		});
 	};
+
 	const toastConfig = {
 		success: (internalState) => (
 			// create modal view to message login success
 			<ToastSuccess />
 		),
 	};
+
 	useEffect(() => {
 		setTimeout(() => {
 			dispatch(setStart());
@@ -59,6 +62,9 @@ const HomeScreen = ({ navigation }) => {
 		if (loggingState.isLogging) {
 			showToast();
 		}
+		// if (bookingState.isBooking === true) {
+		// 	showToastBooking();
+		// }
 	}, []);
 
 	return (
@@ -136,10 +142,11 @@ const HomeScreen = ({ navigation }) => {
 					<FeaturedScreen />
 				</View>
 			</ScrollView>
+			{/* if loggingState = true then toast have props config = toastConfig */}
 			<Toast config={toastConfig} />
 		</View>
 	);
-};
+});
 
 export default HomeScreen;
 const styles = StyleSheet.create({

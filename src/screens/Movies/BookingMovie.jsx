@@ -22,6 +22,7 @@ import axios, * as others from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MAIN_COLOR_TEXT, PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
 const baseUrl = "http://192.168.1.12:5000";
+import { useDispatch, useSelector } from "react-redux";
 
 const BookingMovie = () => {
 	const video = React.useRef(null);
@@ -29,10 +30,22 @@ const BookingMovie = () => {
 	const route = useRoute();
 	// const videoPath = route.params.video.replace(/\\/g, "//");
 	const [liked, setLiked] = useState(false);
+	const userState = useSelector((state) => state.personalInfor);
 	const mario = require("D://MobileProject//src//data//film//dr_strange2.mp4");
-
 	const handleLike = () => {
 		setLiked(!liked);
+		// console.log(route.params.movieId);
+		// console.log(userState._id);
+		console.log(`${baseUrl}/api/movies/${route.params.movieId}/like/${userState._id}`);
+		// axios
+		// 	.put(`${baseUrl}/api/movies/${route.params.movieId}/like/${userState._id}`)
+		// 	.then((res) => {
+		// 		console.log("Liked");
+		// 	})
+		// 	.catch((err) => {
+		// 		console.log(err);
+		// 		alert("You must login to like this movie");
+		// 	});
 	};
 
 	const [modalVisible, setModalVisible] = useState(false);

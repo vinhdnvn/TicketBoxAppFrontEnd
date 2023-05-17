@@ -32,6 +32,7 @@ import LottieView from "lottie-react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setStart } from "./src/Redux/Actions/updateAction.js";
 import { MAIN_COLOR_TEXT, PRIMARY_COLOR } from "./src/Style/styles";
+import UserBooking from "./src/screens/User/UserBooking";
 
 // ============================
 
@@ -114,14 +115,14 @@ const TabNavigator = () => {
 					tabBarIcon: ({ color }) => <Icon4 name="user" size={25} color={color} />,
 				}}
 			/>
-			<Tab.Screen
+			{/* <Tab.Screen
 				name="DateTest"
 				component={DateSlider}
 				options={{
 					headerShown: false,
 					tabBarIcon: ({ color }) => <Icon4 name="user" size={25} color={color} />,
 				}}
-			/>
+			/> */}
 		</Tab.Navigator>
 	);
 };
@@ -213,14 +214,14 @@ export default function App() {
 								headerTintColor: "black",
 							}}
 						/>
-						{/* <Stack.Screen
-						name="Home"
-						component={HomeScreen}
-						options={{
-							headerShown: false,
-							tabBarIcon: ({ color }) => <Film name="film" size={25} color={color} />,
-						}}
-					/> */}
+						<Stack.Screen
+							name="UserBooking"
+							component={UserBooking}
+							options={{
+								headerShown: false,
+								tabBarIcon: ({ color }) => <Film name="film" size={25} color={color} />,
+							}}
+						/>
 					</Stack.Navigator>
 				</MovieContext>
 			</NavigationContainer>

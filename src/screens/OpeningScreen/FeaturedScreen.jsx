@@ -11,6 +11,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import movies from "../../data/movies";
 import { useState } from "react";
 import { Rating } from "react-native-stock-star-rating";
+import { PureComponent } from "react";
 
 // connect backedn axios
 import axios, * as others from "axios";
@@ -25,8 +26,9 @@ const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
 // ===========REDUX===========
 import { useDispatch, useSelector } from "react-redux";
 import { MAIN_COLOR_TEXT, SECONDARY_COLOR_TEXT } from "../../Style/styles";
+import React from "react";
 
-const FeaturedScreen = () => {
+const FeaturedScreen = React.memo(() => {
 	const navigation = useNavigation();
 	const DATA = movies;
 	const [movie, setMovies] = useState([]);
@@ -41,9 +43,11 @@ const FeaturedScreen = () => {
 			.get(`${baseURL}/api/movies`)
 			.then((res) => {
 				setMovies(res.data.movies);
+				// alert("get movies success");
 			})
 			.catch((err) => {
 				console.log(err);
+				// alert("get movies failed");
 			});
 		setIsLoading(false);
 	}, []);
@@ -107,20 +111,76 @@ const FeaturedScreen = () => {
 					</View>
 				</View>
 				<View>
-					<PopularList DATA={DATA} />
+					<PopularList DATA={movie} />
 				</View>
 			</View>
 		</View>
 	);
-};
+});
 
-const PopularList = ({ DATA }) => {
+const PopularList = React.memo(({ DATA }) => {
 	const navigation = useNavigation();
-	const popular = DATA.filter((film) => film.popular == true);
+	const popular = DATA.filter((film) => film.isPopular == true);
+	const route = useRoute();
 	return (
 		<View style={{ paddingHorizontal: 22 }}>
-			{DATA.map((item) => (
-				<View
+			{/* use render DATA which have isPopular = true  */}
+			{/* <FlatList
+				data={popular}
+				keyExtractor={(item) => item._id}
+				showsHorizontalScrollIndicator={false}
+				renderItem={({ item }) => {
+					return (
+						<View
+							style={{
+								width: 100,
+								height: 150,
+								flexDirection: "row",
+								alignItems: "center",
+								marginVertical: 10,
+								borderRadius: 10,
+							}}
+							key={item.id}
+						>
+							<Image
+								source={{ uri: item.image }}
+								style={{
+									width: "100%",
+									height: "100%",
+									resizeMode: "contain",
+									borderRadius: 10,
+								}}
+							/>
+							<View style={{ marginLeft: 20, width: 230 }}>
+								<Text style={{ color: MAIN_COLOR_TEXT, fontWeight: "600" }}>{item.title}</Text>
+								<View style={{ marginVertical: 5 }}>
+									<Rating stars={4.7} maxStars={5} size={12} />
+								</View>
+								<Text style={{ color: SECONDARY_COLOR_TEXT }}>{item.types}</Text>
+							</View>
+						</View>
+					);
+				}}
+			/> */}
+
+			{popular.map((item, index) => (
+				<TouchableOpacity
+					onPress={() => {
+						navigation.navigate("Movie Detail", {
+							movieId: item._id,
+							description: item.description,
+							nameMovie: item.nameMovie,
+							rating: item.rating,
+							rottenTomatoes: item.rottenTomatoes,
+							ign: item.ign,
+							gerne: item.gerne,
+							image: item.image,
+							video: item.video,
+							token: route.params?.token,
+							userId: route.params?.userId,
+							userName: route.params?.userName,
+						});
+					}}
 					style={{
 						width: 100,
 						height: 150,
@@ -129,7 +189,7 @@ const PopularList = ({ DATA }) => {
 						marginVertical: 10,
 						borderRadius: 10,
 					}}
-					key={item.id}
+					key={item._id}
 				>
 					<Image
 						source={{ uri: item.image }}
@@ -141,41 +201,21 @@ const PopularList = ({ DATA }) => {
 						}}
 					/>
 					<View style={{ marginLeft: 20, width: 230 }}>
-						<Text style={{ color: MAIN_COLOR_TEXT, fontWeight: "600" }}>{item.title}</Text>
+						<Text style={{ color: MAIN_COLOR_TEXT, fontWeight: "600" }}>{item.nameMovie}</Text>
 						<View style={{ marginVertical: 5 }}>
-							<Rating stars={4.7} maxStars={5} size={12} />
+							<Rating stars={item.rating} maxStars={5} size={12} />
 						</View>
-						<Text style={{ color: SECONDARY_COLOR_TEXT }}>{item.types}</Text>
+						<Text style={{ color: SECONDARY_COLOR_TEXT }}>{item.gerne}</Text>
 					</View>
-				</View>
+				</TouchableOpacity>
 			))}
 		</View>
 	);
-};
+});
 
-const MovieList = ({ DATA }) => {
+const MovieList = React.memo(({ DATA }) => {
 	const route = useRoute();
-	// new
-	// const [movies, setMovies] = useState([]);
-	// useEffect(() => {
-	// 	const config = {
-	// 		method: "get",
-	// 		url: `${baseUrl}/api/movies`,
-	// 		headers: {},
-	// 	};
-	// 	axios(config)
-	// 		.then((res) => {
-	// 			if (res.status === 200) {
-	// 				setMovies(res.data);
-	// 				console.log(movies);
-	// 			} else {
-	// 				alert("failed");
-	// 			}
-	// 		})
-	// 		.catch((err) => {
-	// 			console.log(err);
-	// 		});
-	// }, []);
+
 	const navigation = useNavigation();
 	const [scrollX, setScrollX] = useState(0);
 	// ====================
@@ -276,6 +316,6 @@ const MovieList = ({ DATA }) => {
 			/>
 		</View>
 	);
-};
+});
 
 export default FeaturedScreen;

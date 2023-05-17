@@ -1,4 +1,4 @@
-const PRIMARY_COLOR = "#820b0f";
+const PRIMARY_COLOR = "#21F090";
 const SECONDARY_COLOR_TEXT = "#DAD2D2";
 const MAIN_COLOR_TEXT = "white";
 
