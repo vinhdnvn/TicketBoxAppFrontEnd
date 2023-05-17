@@ -4,20 +4,29 @@ import Icon2 from "react-native-vector-icons/Feather";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { baseURL } from "../../api/client/private.client";
-import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import ToastBookingSucess from "../../Notifications/ToastBookingSucess";
+import Toast from "react-native-toast-message";
+import React from "react";
 
 // ===========REDUX===========
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../Redux/Actions/updateAction";
 import HandleLogged from "../../components/HandleLogged";
+import { setBooking } from "../../Redux/Actions/bookingAction";
 // ===========================
-const Personal = () => {
+const Personal = React.memo(() => {
 	const navigation = useNavigation();
 	const route = useRoute();
 	const [userName, setUserName] = useState("");
+	const bookingState = useSelector((state) => state.bookingInfor);
+	const toastConfig = {
+		success: (internalState) => (
+			// create modal view to message login success
+			<ToastBookingSucess />
+		),
+	};
 
 	// ===========REDUX===========
 	const loginUserData = useSelector((state) => state.personalInfor);
@@ -29,7 +38,18 @@ const Personal = () => {
 		dispatch(logoutUser());
 		navigation.navigate("Home");
 	};
+	const showToastBooking = () => {
+		Toast.show({
+			type: "success",
+			text1: "Hello",
+			visibilityTime: 2000,
+			autoHide: true,
+		});
+	};
 	useEffect(() => {
+		if (bookingState.isBooking) {
+			showToastBooking();
+		}
 		setTimeout(() => {
 			const getItemFromAsyncStorage = async () => {
 				try {
@@ -87,7 +107,7 @@ const Personal = () => {
 										<Image
 											style={{ height: 80, width: 80, borderRadius: "100%" }}
 											source={{
-												uri: "https://blog.logrocket.com/wp-content/uploads/2020/11/create-avatar-feature-react.png",
+												uri: loginUserData.image,
 											}}
 										/>
 									</View>
@@ -111,7 +131,10 @@ const Personal = () => {
 									</View>
 								</View>
 								{/* own tickets */}
-								<View
+								<TouchableOpacity
+									onPress={() => {
+										navigation.navigate("UserBooking");
+									}}
 									style={{
 										padding: 20,
 										flexDirection: "row",
@@ -120,7 +143,7 @@ const Personal = () => {
 								>
 									<Icon3 name="ticket-confirmation-outline" size={25} color={"#990099"} />
 									<Text style={{ marginLeft: 18, fontWeight: "500" }}>My tickets</Text>
-								</View>
+								</TouchableOpacity>
 							</View>
 						</View>
 						{/* ============ */}
@@ -245,12 +268,13 @@ const Personal = () => {
 							<Text style={{ color: "gray" }}> Version 1.0.0</Text>
 						</View>
 					</ScrollView>
+					<Toast config={toastConfig} />
 				</View>
 			) : (
 				<HandleLogged />
 			)}
 		</View>
 	);
-};
+});
 
 export default Personal;

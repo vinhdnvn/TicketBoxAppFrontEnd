@@ -1,11 +1,9 @@
 import { View, Text } from "react-native";
-import React from "react";
 
-const ToastSuccess = React.memo(() => {
+const ToastSuccess = () => {
 	return (
 		<View
 			style={{
-				top: 20,
 				width: "80%",
 				paddingHorizontal: 10,
 				paddingVertical: 10,
@@ -20,9 +18,11 @@ const ToastSuccess = React.memo(() => {
 				position: "absolute",
 			}}
 		>
-			<Text style={{ color: "black", fontSize: 15, fontWeight: "500" }}>Login Succes !</Text>
+			<Text style={{ color: "black", fontSize: 12, fontWeight: "500" }}>
+				Booking Succes ! Please check your ticket
+			</Text>
 		</View>
 	);
-});
+};
 
 export default ToastSuccess;

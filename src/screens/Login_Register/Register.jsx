@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Image, Text, Button, ScrollView } from "react-native";
 import Back from "react-native-vector-icons/Feather";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import { TextInput } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 // connect backend
 import axios from "axios";
+import { baseURL } from "../../api/client/private.client";
 const baseUrl = "http://172.20.10.13:5000";
 
 const Register = () => {
@@ -94,57 +95,20 @@ const Register = () => {
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const navigation = useNavigation();
 
-	const handleRegister = async () => {
-		// check validate false => return
-		if (
-			!validateEmail(email) ||
-			!validatePassword(password, confirmPassword) ||
-			!validateName(name) ||
-			!validatePhone(phone)
-		) {
-			return;
+	const logText = async () => {
+		try {
+			await axios.post(`${baseURL}/api/users`, {
+				email,
+				name,
+				password,
+			});
+			console.log("Create");
+			// alert("Register successfully");
+			navigation.navigate("Home");
+		} catch (error) {
+			console.log(error);
+			alert("Register failed, please try again!");
 		}
-
-		// Handle register logic here
-		// try {
-		// 	const response = await axios.post(`${baseUrl}/auth/signup`, {
-		// 		email,
-		// 		name,
-		// 		dateOfBirth: dateOfBirth.toLocaleDateString("en-GB", {
-		// 			day: "numeric",
-		// 			month: "numeric",
-		// 			year: "numeric",
-		// 		}),
-		// 		phone,
-		// 		password,
-		// 	});
-		// 	console.log(response.data);
-		// 	if (response.status === 200) {
-		// 		alert("Register successfully");
-		// 		navigation.navigate("Login");
-		// 	} else {
-		// 		alert("Register failed, please try again!");
-		// 	}
-		// } catch (error) {
-		// 	console.log(error);
-		// 	alert("Register failed, please try again!");
-		// }
-	};
-	const logText = () => {
-		console.log("logText");
-		console.log("email: ", email);
-		console.log("name: ", name);
-		console.log(
-			"dateOfBirth: ",
-			dateOfBirth.toLocaleDateString("en-GB", {
-				day: "numeric",
-				month: "numeric",
-				year: "numeric",
-			})
-		);
-		console.log("phone: ", phone);
-		console.log("password", password);
-		console.log("confirmPass", confirmPassword);
 	};
 
 	return (
@@ -375,7 +339,7 @@ const Register = () => {
 			</ScrollView>
 			<View style={{ justifyContent: "center", alignItems: "center", marginBottom: 60 }}>
 				<TouchableOpacity
-					onPress={() => handleRegister()}
+					onPress={logText}
 					style={{
 						backgroundColor: "rgb(45, 194, 117)",
 						paddingHorizontal: 18,

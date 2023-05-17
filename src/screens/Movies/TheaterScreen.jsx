@@ -11,7 +11,7 @@ import {
 	Modal,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { MovieCards } from "./Context";
 import { addDays, eachDayOfInterval, eachWeekOfInterval, format, subDays } from "date-fns";
 import React, { useState } from "react";
@@ -19,9 +19,11 @@ import PagerView from "react-native-pager-view";
 import BackModal from "react-native-vector-icons/AntDesign";
 import axios from "axios";
 import { baseURL } from "../../api/client/private.client";
-import { PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
+import { PRIMARY_COLOR } from "../../Style/styles";
+
 // ==========REDUX================
 import { useDispatch, useSelector } from "react-redux";
+import { setLogging } from "../../Redux/Actions/loggedAction";
 const dates = eachWeekOfInterval(
 	{
 		start: subDays(new Date(), 14),
@@ -40,12 +42,11 @@ const dates = eachWeekOfInterval(
 	return acc;
 }, []);
 
-const TheaterScreen = () => {
-	const dispatch = useDispatch();
+const TheaterScreen = React.memo(() => {
 	const stateCinema = useSelector((state) => state.cinemaInfor);
 	const userState = useSelector((state) => state.personalInfor);
-	console.log(stateCinema, "stateCinema");
-	console.log(userState, "userState");
+	// console.log(stateCinema, "stateCinema");
+	// console.log(userState, "userState");
 	const route = useRoute();
 	const { seats, setSeats } = useContext(MovieCards);
 	const onSeatSelect = (item) => {
@@ -73,8 +74,8 @@ const TheaterScreen = () => {
 	const fee = 12;
 	const noOfSeats = seats.length;
 	const total = seats.length > 0 ? fee + noOfSeats * 240 : 0;
-	console.log(total);
-	console.log("seats ", seats);
+	// console.log(total);
+	// console.log("seats ", seats);
 
 	// ======for Date SLider ==========
 	const [selectedDate, setSelectedDate] = useState(null);
@@ -92,19 +93,13 @@ const TheaterScreen = () => {
 		setModalFirstVisible(false);
 	};
 
+	const bookingState = useSelector((state) => state.bookingInfor);
+	const dispatchBooking = useDispatch();
 	// ======= for call API Booking =========
 	const finishBooking = async () => {
-		console.log("finish booking");
-		// log nameMovie
-		// console.log(route.params.nameMovie);
-		// console.log(route.params.gerne);
-		// console.log(route.params.nameTheater);
-		// console.log(selectedDate);
-		// console.log(selectedTime);
-		// console.log(seats.toString());
-		// console.log(`${seats.length * fee + 1.2}`);
-		// console.log(userState._id);
-		// console.log(`${baseURL}/api/bookings/${userState._id}`);
+		// console.log("finish booking");
+		dispatchBooking(setLogging());
+
 		try {
 			await axios.post(`${baseURL}/api/bookings/${userState._id}`, {
 				movie: route.params.nameMovie,
@@ -112,17 +107,18 @@ const TheaterScreen = () => {
 				cinema: route.params.nameTheater,
 				date: selectedDate,
 				time: selectedTime,
-				// save seats convert to string character not array
 				seat: seats.toString(),
-				// result of seats.length * fee + 1.2
 				price: `${seats.length * fee + 1.2}`,
+				imageBooking: route.params.image,
 			});
-			alert("Booking success");
-			navigation.dispatch(
-				CommonActions.navigate({
-					name: "Home",
-				})
-			);
+			// alert("Booking success");
+			setTimeout(() => {
+				navigation.dispatch(
+					CommonActions.navigate({
+						name: "Account",
+					})
+				);
+			}, 500);
 		} catch (error) {
 			console.log(error);
 			alert("Booking failed");
@@ -132,7 +128,6 @@ const TheaterScreen = () => {
 			const response = await axios.put(`${baseURL}/api/cinemas/${stateCinema._id}/seats`, {
 				seats: seats,
 			});
-			// set seat seleted to empty
 			setSeats([]);
 		} catch (error) {
 			console.log(error);
@@ -177,21 +172,16 @@ const TheaterScreen = () => {
 							}}
 							onPress={handleCloseFirstModal}
 						>
-							<Text style={{ color: SECONDARY_COLOR_TEXT }}>OK</Text>
+							<Text style={{ color: "black" }}>OK</Text>
 						</TouchableOpacity>
 					</View>
 				</View>
 			</Modal>
 			<View style={{ alignItems: "center" }}>
 				<Text style={{ marginTop: 10, fontWeight: "500" }}>Please choose date first !</Text>
-				{/* <Text style={{ color: "white" }}> {route.params.title}</Text> */}
-				{/* <Text style={{ color: "black", fontSize: 15, fontWeight: "700" }}>{route.params.mall}</Text>
-				<Text style={{ color: "gray", fontSize: 12 }}>{route.params.timeSelected}</Text> */}
+
 				{/* date picker */}
 				<DateSlider onDateSelect={handleDateSelect} />
-
-				{/* ================================== */}
-
 				<TimesSlider onTimeSelect={handleTimeSelect} />
 			</View>
 			{/* Seats */}
@@ -211,62 +201,45 @@ const TheaterScreen = () => {
 								borderRadius: 10,
 							}}
 						>
-							{
-								seats.includes(item.name) ? (
-									<Text
-										style={{
-											borderColor: "white",
+							{seats.includes(item.name) ? (
+								<Text
+									style={{
+										borderColor: "white",
 
-											color: "black",
-											padding: 10,
-											borderRadius: 10,
-											backgroundColor: "orange",
-										}}
-									>
-										{item.name}
-									</Text>
-								) : // check if seats have item isBooked = true
-								item.isBooked ? (
-									<Text
-										style={{
-											borderColor: "white",
-											padding: 10,
-											color: "black",
-											borderRadius: 10,
-											backgroundColor: "#21F090",
-										}}
-									>
-										{item.name}
-									</Text>
-								) : (
-									<Text
-										style={{
-											borderColor: "white",
-											padding: 10,
-											color: "black",
-											borderRadius: 10,
-											backgroundColor: selectedDate && selectedTime ? "#BCB9B9" : "#F6428A",
-										}}
-									>
-										{item.name}
-									</Text>
-								)
-
-								// (
-								// 	<Text
-								// 		style={{
-								// 			borderColor: "white",
-
-								// 			color: "black",
-								// 			padding: 10,
-								// 			borderRadius: 10,
-								// 			backgroundColor: "#BCB9B9",
-								// 		}}
-								// 	>
-								// 		{item.name}
-								// 	</Text>
-								// )
-							}
+										color: "black",
+										padding: 10,
+										borderRadius: 10,
+										backgroundColor: "orange",
+									}}
+								>
+									{item.name}
+								</Text>
+							) : // check if seats have item isBooked = true
+							item.isBooked ? (
+								<Text
+									style={{
+										borderColor: "white",
+										padding: 10,
+										color: "black",
+										borderRadius: 10,
+										backgroundColor: "#21F090",
+									}}
+								>
+									{item.name}
+								</Text>
+							) : (
+								<Text
+									style={{
+										borderColor: "white",
+										padding: 10,
+										color: "black",
+										borderRadius: 10,
+										backgroundColor: selectedDate && selectedTime ? "#BCB9B9" : "#F6428A",
+									}}
+								>
+									{item.name}
+								</Text>
+							)}
 						</Pressable>
 					)}
 				/>
@@ -548,7 +521,8 @@ const TheaterScreen = () => {
 											>
 												<Image
 													source={{
-														uri: "https://imageio.forbes.com/blogs-images/steveolenski/files/2016/07/Mastercard_new_logo-1200x865.jpg?format=jpg&width=960",
+														// take for me the image from the internet the visa image
+														uri: "https://w7.pngwing.com/pngs/20/987/png-transparent-logo-visa-credit-card-business-visa-text-trademark-payment.png",
 													}}
 													style={{ width: 50, height: 50 }}
 												/>
@@ -559,7 +533,7 @@ const TheaterScreen = () => {
 														marginLeft: 20,
 													}}
 												>
-													<Text style={{ fontSize: 15, fontWeight: "500" }}>MasterCard</Text>
+													<Text style={{ fontSize: 15, fontWeight: "500" }}>VisaCard</Text>
 													<Text>**** **** **** 0222</Text>
 												</View>
 											</View>
@@ -576,7 +550,7 @@ const TheaterScreen = () => {
 											>
 												<Image
 													source={{
-														uri: "https://imageio.forbes.com/blogs-images/steveolenski/files/2016/07/Mastercard_new_logo-1200x865.jpg?format=jpg&width=960",
+														uri: "https://e7.pngegg.com/pngimages/711/9/png-clipart-paypal-logo-brand-font-payment-paypal-text-logo.png",
 													}}
 													style={{ width: 50, height: 50 }}
 												/>
@@ -587,7 +561,7 @@ const TheaterScreen = () => {
 														marginLeft: 20,
 													}}
 												>
-													<Text style={{ fontSize: 15, fontWeight: "500" }}>MasterCard</Text>
+													<Text style={{ fontSize: 15, fontWeight: "500" }}>Paypal</Text>
 													<Text>**** **** **** 0222</Text>
 												</View>
 											</View>
@@ -620,7 +594,7 @@ const TheaterScreen = () => {
 			</View>
 		</View>
 	);
-};
+});
 
 const DateSlider = (props) => {
 	const { onDateSelect } = props;
@@ -644,7 +618,7 @@ const DateSlider = (props) => {
 								const handlePress = () => {
 									setIsPressed(!isPressed);
 									const selectedDate = day.toLocaleDateString("en-GB");
-									console.log(selectedDate);
+
 									onDateSelect(selectedDate);
 								};
 								const buttonColor = isPressed ? "#E43838" : "#F5F5F5";
@@ -714,7 +688,7 @@ const TimesSlider = (props) => {
 							onPress={() => {
 								setSelectedTime(time);
 								// log the time after the user selects it
-								console.log(time);
+								// console.log(time);
 								onTimeSelect(time);
 							}}
 							style={[styles.timeOption, time === selectedTime && styles.selectedTimeOption]}
