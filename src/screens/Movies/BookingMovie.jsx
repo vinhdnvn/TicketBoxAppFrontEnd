@@ -1,13 +1,13 @@
 import { useRoute } from "@react-navigation/native";
 import {
 	Modal,
-	ScrollView,
+	FlatList,
 	Text,
 	TouchableOpacity,
 	View,
 	Image,
-	FlatList,
-	useWindowDimensions,
+	ActivityIndicator,
+	TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -15,38 +15,76 @@ import Heart from "react-native-vector-icons/AntDesign";
 import { Video } from "expo-av";
 import React from "react";
 import Back from "react-native-vector-icons/AntDesign";
+import Submit from "react-native-vector-icons/AntDesign";
 import cinema from "../../data/cinema";
 import PlayButton from "react-native-vector-icons/Entypo";
 // import base url from backend
 import axios, * as others from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MAIN_COLOR_TEXT, PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
-const baseUrl = "http://192.168.1.12:5000";
+
 import { useDispatch, useSelector } from "react-redux";
+
+import { Icon } from "react-native-elements";
+import { baseURL } from "../../api/client/private.client";
+import { set } from "date-fns";
 
 const BookingMovie = () => {
 	const video = React.useRef(null);
 	const navigation = useNavigation();
 	const route = useRoute();
+	const [isLoading, setIsLoading] = useState(false);
+	const [reviewData, setReviewData] = useState([]);
+	const userState = useSelector((state) => state.personalInfor);
 	// const videoPath = route.params.video.replace(/\\/g, "//");
 	const [liked, setLiked] = useState(false);
-	const userState = useSelector((state) => state.personalInfor);
-	const mario = require("D://MobileProject//src//data//film//dr_strange2.mp4");
-	const handleLike = () => {
+	const handleLike = async () => {
 		setLiked(!liked);
+	};
+	const [comment, setComment] = useState("");
+
+	const addComment = async () => {
+		axios
+			.post(`${baseURL}/api/movies/${route.params.movieId}/reviews`, {
+				userId: userState._id,
+				comment: comment,
+				image: userState.image,
+				name: userState.name,
+			})
+			.then((res) => {
+				// console.log(res.data.movies);
+				setReviewData(res.data.movies);
+				// console.log(reviewData);
+				// console.log(reviewData);
+				alert("add comment success");
+			})
+			.catch((err) => {
+				console.log(err);
+				alert("add comment failed");
+			});
+	};
+	// get all reviews
+	useEffect(() => {
+		// log id of the movies
 		// console.log(route.params.movieId);
 		// console.log(userState._id);
-		console.log(`${baseUrl}/api/movies/${route.params.movieId}/like/${userState._id}`);
-		// axios
-		// 	.put(`${baseUrl}/api/movies/${route.params.movieId}/like/${userState._id}`)
-		// 	.then((res) => {
-		// 		console.log("Liked");
-		// 	})
-		// 	.catch((err) => {
-		// 		console.log(err);
-		// 		alert("You must login to like this movie");
-		// 	});
-	};
+		setIsLoading(true);
+
+		axios
+			.get(`${baseURL}/api/movies/${route.params.movieId}/reviews`)
+			.then((res) => {
+				// console.log(res.data.movies);
+				setReviewData(res.data.movies);
+				// console.log(reviewData);
+				// alert("get reviews success");
+				setIsLoading(false);
+			})
+			.catch((err) => {
+				console.log(err);
+				alert("get reviews failed");
+				setIsLoading(false);
+			});
+	}, []);
 
 	const [modalVisible, setModalVisible] = useState(false);
 	const openModal = () => {
@@ -56,24 +94,29 @@ const BookingMovie = () => {
 		setModalVisible(false);
 	};
 
-	const [videoTrailer, setVideoTrailer] = useState("");
-
 	const [status, setStatus] = useState({});
 
-	const checkIfLoggedIn = async () => {
-		try {
-			const token = await AsyncStorage.getItem("token");
-			if (!token) {
-				navigation.navigate("Login");
-			}
-		} catch (error) {
-			console.log(error);
-		}
+	const onChangeComment = (comment) => {
+		setComment(comment);
 	};
+	if (isLoading) {
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<ActivityIndicator size={"large"} color={PRIMARY_COLOR} />
+			</View>
+		);
+	}
 
 	return (
 		<View style={{ flex: 1 }}>
+			{/* {isLoading && (
+				<ActivityIndicator
+					size="large"
+					style={{ position: "absolute", top: 0, bottom: "45%", left: 0, right: 0, zIndex: 1 }}
+				/>
+			)} */}
 			<Video
+				onLoad={() => setIsLoading(false)}
 				ref={video}
 				style={{
 					position: "absolute",
@@ -122,7 +165,7 @@ const BookingMovie = () => {
 				</TouchableOpacity>
 				{/* like button */}
 				<TouchableOpacity
-					onPress={handleLike}
+					onPress={() => handleLike()}
 					style={{
 						backgroundColor: "#rgba(0,0,0,0.5)",
 						borderRadius: 100,
@@ -230,7 +273,7 @@ const BookingMovie = () => {
 				</View>
 				{/* Title and gern film */}
 				<View style={{ justifyContent: "center", alignItems: "center", marginTop: 20 }}>
-					<Text style={{ fontSize: 20, fontWeight: "600", color: MAIN_COLOR_TEXT }}>
+					<Text style={{ fontSize: 20, fontWeight: "600", color: PRIMARY_COLOR }}>
 						{route.params.nameMovie}
 					</Text>
 					<View
@@ -259,9 +302,160 @@ const BookingMovie = () => {
 					</Text>
 				</View>
 				{/* Read more description BUtton and add the event click to open modal */}
-				<TouchableOpacity style={{ justifyContent: "center", alignItems: "center" }}>
-					<Text style={{ color: PRIMARY_COLOR, fontWeight: "bold", fontSize: 15 }}>Read more</Text>
+				<TouchableOpacity
+					onPress={() => openModal()}
+					style={{ justifyContent: "center", alignItems: "center" }}
+				>
+					<Text style={{ color: PRIMARY_COLOR, fontWeight: "bold", fontSize: 15 }}>Comment</Text>
 				</TouchableOpacity>
+				<View>
+					<Modal animationType="fade" transparent={true} visible={modalVisible}>
+						<View
+							style={{
+								width: "100%",
+								height: "100%",
+								backgroundColor: "rgba(11,11,11,0.5)",
+								flexDirection: "column",
+								borderRadius: 10,
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<TouchableOpacity
+								style={{
+									position: "absolute",
+									top: 60,
+									left: 20,
+									padding: 10,
+									borderRadius: 50,
+									borderColor: "white",
+									borderWidth: 1,
+								}}
+								onPress={() => closeModal()}
+							>
+								{/* icon X */}
+								<Icon name="close" size={20} color="white" />
+							</TouchableOpacity>
+							{/* create view for a list of review of movies */}
+							<View
+								style={{
+									width: "90%",
+									height: "90%",
+									borderRadius: 10,
+									padding: 10,
+									top: 60,
+									alignItems: "center",
+								}}
+							>
+								{/* create a view for a list of review of movies */}
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+									}}
+								>
+									<Text style={{ fontSize: 20, fontWeight: "bold", color: PRIMARY_COLOR }}>
+										{route.params.nameMovie}
+									</Text>
+								</View>
+
+								<TextInput
+									style={{
+										position: "absolute",
+										top: 50,
+										borderColor: "black",
+										borderRadius: 20,
+										backgroundColor: "white",
+										marginTop: 20,
+										width: 320,
+										height: 60,
+										zIndex: 20,
+									}}
+									placeholderTextColor="black"
+									onChangeText={onChangeComment}
+									placeholder="    Add a comment ... "
+								/>
+								{/* add a add button */}
+								<TouchableOpacity
+									style={{
+										position: "absolute",
+										top: 50,
+										right: 20,
+										borderColor: "black",
+										borderRadius: 20,
+										backgroundColor: "white",
+										marginTop: 20,
+										width: 60,
+										height: 60,
+										zIndex: 20,
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+									onPress={addComment}
+								>
+									<Submit name="checkcircle" size={30} color="black" />
+								</TouchableOpacity>
+
+								<FlatList
+									style={{ marginTop: 100 }}
+									data={reviewData}
+									keyExtractor={(item) => item._id}
+									renderItem={(item) => {
+										return (
+											<TouchableOpacity
+												// onPress={() => {
+												// 	console.log(item.item.comment);
+												// }}
+												key={item._id}
+												style={{
+													marginTop: 20,
+													backgroundColor: "white",
+													width: 300,
+													height: 100,
+													borderRadius: 30,
+												}}
+											>
+												<View
+													style={{
+														flexDirection: "row",
+														alignItems: "center",
+														marginLeft: 20,
+													}}
+												>
+													<Image
+														style={{ marginLeft: 10, width: 40, height: 40, borderRadius: 20 }}
+														source={{ uri: item.item.image }}
+													/>
+													<View
+														style={{
+															backgroundColor: "white",
+															borderRadius: 20,
+															padding: 12,
+															marginLeft: 10,
+															marginTop: 15,
+															width: 200,
+														}}
+													>
+														<Text style={{ color: "black", fontSize: 15, fontWeight: "600" }}>
+															{item.item.name}
+														</Text>
+														<Text
+															numberOfLines={1}
+															style={{ color: "black", fontSize: 12, marginTop: 20, width: 180 }}
+														>
+															{item.item.comment}
+														</Text>
+													</View>
+												</View>
+											</TouchableOpacity>
+										);
+									}}
+								/>
+							</View>
+						</View>
+					</Modal>
+				</View>
+
 				{/* button Booking */}
 				<View style={{ justifyContent: "center", alignItems: "center", bottom: -50 }}>
 					<TouchableOpacity
@@ -277,22 +471,8 @@ const BookingMovie = () => {
 									gerne: route.params.gerne,
 								});
 								video.current.pauseAsync();
-								console.log(token);
+								// console.log(token);
 							}
-
-							// checking token in async storage
-
-							// if (route.params.token) {
-							// 	navigation.navigate("Please choose 1 cinema !", {
-							// 		nameMovie: route.params.nameMovie,
-							// 		image: route.params.image,
-							// 		genre: route.params.genre,
-							// 	});
-							// 	video.current.pauseAsync();
-							// } else {
-							// 	navigation.navigate("Login");
-							// 	video.current.pauseAsync();
-							// }
 						}}
 					>
 						<View style={{ backgroundColor: PRIMARY_COLOR, padding: 20, borderRadius: 30 }}>

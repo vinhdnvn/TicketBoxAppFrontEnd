@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../Redux/Actions/updateAction";
 import { setLogging } from "../Redux/Actions/loggedAction";
+import { PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../Style/styles";
 
 // ======================
 
@@ -120,6 +121,7 @@ const HandleLogged = () => {
 				flex: 1,
 				alignItems: "center",
 				justifyContent: "center",
+				backgroundColor: SECONDARY_COLOR_TEXT,
 			}}
 		>
 			<Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 35 }}>Login</Text>
@@ -172,19 +174,19 @@ const HandleLogged = () => {
 				>
 					<Text
 						style={{
-							color: "#32CD32",
+							color: PRIMARY_COLOR,
 							fontWeight: "bold",
 							textAlign: "center",
 							fontSize: 15,
 						}}
 					>
-						Tiếp tục
+						Continue
 					</Text>
 				</TouchableOpacity>
 				<View style={{ flexDirection: "row" }}>
 					<Text
 						style={{
-							color: "gray",
+							color: "black",
 							fontSize: 15,
 							fontWeight: "400",
 							marginHorizontal: 2,
@@ -202,7 +204,7 @@ const HandleLogged = () => {
 					>
 						<Text
 							style={{
-								color: "#32CD32",
+								color: PRIMARY_COLOR,
 								fontWeight: "bold",
 								textAlign: "center",
 								fontSize: 15,

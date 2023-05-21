@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { loginValidation } from "../../Validation/UserValidation";
 // const baseUrl = "http://192.168.1.47:5000";
 import { baseURL } from "../../api/client/private.client";
-import { login } from "../../api/api";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // improt AntDesign
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -14,7 +14,6 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 // =========REDUX========
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../Redux/Actions/updateAction";
-import { set } from "date-fns";
 
 // ======================
 
@@ -24,14 +23,7 @@ const Login = () => {
 	const [message, setMessage] = useState("");
 	const navigation = useNavigation();
 	const [isLoading, setIsLoading] = useState(false);
-	const [isError, setIsError] = useState(false);
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [userInfor, setUserInfor] = useState({});
-
-	const [emailData, setEmailData] = useState("");
-	const [nameData, setNameData] = useState("");
-	const [imageData, setImageData] = useState("");
-	const [isAdminData, setIsAdminData] = useState(false);
 
 	const [data, setData] = useState([]);
 
@@ -67,12 +59,6 @@ const Login = () => {
 			});
 			// save token by async storage
 			await AsyncStorage.setItem("token", response.data.token);
-
-			// dispatch action with email, image, isAdmin, name take from response.data
-			// setEmailData(response.data.email);
-			// setNameData(response.data.name);
-			// setImageData(response.data.image);
-			// setIsAdminData(response.data.isAdmin);
 
 			dispatch(
 				loginUser(

@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { View, Text, FlatList, TouchableOpacity, Image, Modal } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import { baseURL } from "../../api/client/private.client";
@@ -12,12 +12,13 @@ const UserBooking = React.memo(() => {
 	// console.log(userState);
 	const [bookingList, setBookingList] = useState([]);
 	const [modalVisible, setModalVisible] = useState(false);
-
+	const [isLoading, setIsLoading] = useState(false);
 	const handdleToggleModal = () => {
 		setModalVisible(!modalVisible);
 	};
 
 	useEffect(() => {
+		setIsLoading(true);
 		const getBookingList = async () => {
 			await axios
 				.get(`${baseURL}/api/bookings/${userState._id}`)
@@ -25,16 +26,24 @@ const UserBooking = React.memo(() => {
 					// console.log(res.data);
 					setBookingList(res.data);
 					// console.log(bookingList);
+					setIsLoading(false);
 				})
 				.catch((err) => {
 					console.log(err);
+					setIsLoading(false);
 				});
 		};
 		getBookingList();
 	}, []);
 	const navigation = useNavigation();
 	return (
-		<View style={{ width: "100%", height: "100%" }}>
+		<View style={{ flex: 1 }}>
+			{isLoading && (
+				<ActivityIndicator
+					size="large"
+					style={{ position: "absolute", top: 0, bottom: "45%", left: 0, right: 0, zIndex: 1 }}
+				/>
+			)}
 			{/* create arrow back icon for back the previous navigation */}
 			<View
 				style={{
