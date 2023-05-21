@@ -17,7 +17,6 @@ import CinemaPicker from "./src/screens/Movies/CinemaPicker";
 import TheaterScreen from "./src/screens/Movies/TheaterScreen";
 import { MovieContext } from "./src/screens/Movies/Context";
 import FavouriteMovies from "./src/screens/Movies/FavouriteMovies";
-import DateSlider from "./src/components/DateSlider";
 import Login from "./src/screens/Login_Register/Login";
 import Register from "./src/screens/Login_Register/Register";
 import { useEffect, useState } from "react";
@@ -31,8 +30,10 @@ import LottieView from "lottie-react-native";
 // ===========REDUX===========
 import { useDispatch, useSelector } from "react-redux";
 import { setStart } from "./src/Redux/Actions/updateAction.js";
-import { MAIN_COLOR_TEXT, PRIMARY_COLOR } from "./src/Style/styles";
+import { MAIN_COLOR_TEXT, PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "./src/Style/styles";
 import UserBooking from "./src/screens/User/UserBooking";
+import SearchingScreen from "./src/screens/Movies/SearchingScreen";
+import ReviewScreen from "./src/screens/Movies/ReviewScreen";
 
 // ============================
 
@@ -58,11 +59,11 @@ const TabNavigator = () => {
 					flex: 1,
 					justifyContent: "center",
 					alignItems: "center",
-					backgroundColor: "#820b0f",
+					backgroundColor: PRIMARY_COLOR,
 				}}
 			>
 				<LottieView
-					style={{ width: 280, height: 280, backgroundColor: "#820b0f" }}
+					style={{ width: 280, height: 280, backgroundColor: PRIMARY_COLOR }}
 					source={require("./src/data/34590-movie-theatre.json")}
 					autoPlay
 					loop
@@ -115,14 +116,6 @@ const TabNavigator = () => {
 					tabBarIcon: ({ color }) => <Icon4 name="user" size={25} color={color} />,
 				}}
 			/>
-			{/* <Tab.Screen
-				name="DateTest"
-				component={DateSlider}
-				options={{
-					headerShown: false,
-					tabBarIcon: ({ color }) => <Icon4 name="user" size={25} color={color} />,
-				}}
-			/> */}
 		</Tab.Navigator>
 	);
 };
@@ -130,7 +123,7 @@ const TabNavigator = () => {
 export default function App() {
 	const styleTypes = ["default", "dark-content", "light-content"];
 	const [visibleStatusBar, setVisibleStatusBar] = useState(false);
-	const [styleStatusBar, setStyleStatusBar] = useState(styleTypes[2]);
+	const [styleStatusBar, setStyleStatusBar] = useState(styleTypes[1]);
 
 	return (
 		<Provider store={store}>
@@ -182,7 +175,7 @@ export default function App() {
 							options={{
 								headerShown: true,
 								headerStyle: {
-									backgroundColor: "#151515",
+									backgroundColor: SECONDARY_COLOR_TEXT,
 								},
 								headerTitleStyle: {
 									color: MAIN_COLOR_TEXT,
@@ -195,6 +188,11 @@ export default function App() {
 							name="FeaturedScreen"
 							component={FeaturedScreen}
 							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="SearchingScreen"
+							component={SearchingScreen}
+							options={{ headerShown: true, headerTitle: "" }}
 						/>
 						<Stack.Screen
 							name="Login"
@@ -220,6 +218,13 @@ export default function App() {
 							options={{
 								headerShown: false,
 								tabBarIcon: ({ color }) => <Film name="film" size={25} color={color} />,
+							}}
+						/>
+						<Stack.Screen
+							name="ReviewScreen"
+							component={ReviewScreen}
+							options={{
+								headerShown: true,
 							}}
 						/>
 					</Stack.Navigator>

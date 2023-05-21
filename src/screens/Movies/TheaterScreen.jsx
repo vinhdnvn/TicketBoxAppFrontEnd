@@ -9,17 +9,18 @@ import {
 	StyleSheet,
 	ScrollView,
 	Modal,
+	ActivityIndicator,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useContext } from "react";
 import { MovieCards } from "./Context";
-import { addDays, eachDayOfInterval, eachWeekOfInterval, format, subDays } from "date-fns";
+import { addDays, eachDayOfInterval, eachWeekOfInterval, format, set, subDays } from "date-fns";
 import React, { useState } from "react";
 import PagerView from "react-native-pager-view";
 import BackModal from "react-native-vector-icons/AntDesign";
 import axios from "axios";
 import { baseURL } from "../../api/client/private.client";
-import { PRIMARY_COLOR } from "../../Style/styles";
+import { PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
 
 // ==========REDUX================
 import { useDispatch, useSelector } from "react-redux";
@@ -45,6 +46,7 @@ const dates = eachWeekOfInterval(
 const TheaterScreen = React.memo(() => {
 	const stateCinema = useSelector((state) => state.cinemaInfor);
 	const userState = useSelector((state) => state.personalInfor);
+	const [isLoading, setIsLoading] = useState(false);
 	// console.log(stateCinema, "stateCinema");
 	// console.log(userState, "userState");
 	const route = useRoute();
@@ -99,7 +101,7 @@ const TheaterScreen = React.memo(() => {
 	const finishBooking = async () => {
 		// console.log("finish booking");
 		dispatchBooking(setLogging());
-
+		setIsLoading(true);
 		try {
 			await axios.post(`${baseURL}/api/bookings/${userState._id}`, {
 				movie: route.params.nameMovie,
@@ -111,6 +113,7 @@ const TheaterScreen = React.memo(() => {
 				price: `${seats.length * fee + 1.2}`,
 				imageBooking: route.params.image,
 			});
+			setIsLoading(false);
 			// alert("Booking success");
 			setTimeout(() => {
 				navigation.dispatch(
@@ -118,10 +121,11 @@ const TheaterScreen = React.memo(() => {
 						name: "Account",
 					})
 				);
-			}, 500);
+			}, 200);
 		} catch (error) {
 			console.log(error);
 			alert("Booking failed");
+			setIsLoading(false);
 		}
 
 		try {
@@ -129,14 +133,22 @@ const TheaterScreen = React.memo(() => {
 				seats: seats,
 			});
 			setSeats([]);
+			setIsLoading(false);
 		} catch (error) {
 			console.log(error);
 			alert("error");
+			setIsLoading(false);
 		}
 	};
 
 	return (
-		<View style={{ width: "100%", height: "100%", backgroundColor: "white" }}>
+		<View style={{ flex: 1, backgroundColor: "white" }}>
+			{isLoading && (
+				<ActivityIndicator
+					size="large"
+					style={{ position: "absolute", top: 0, bottom: "45%", left: 0, right: 0, zIndex: 1 }}
+				/>
+			)}
 			<Modal visible={modalFirstVisible} animationType="slide">
 				<View
 					style={{
@@ -258,7 +270,7 @@ const TheaterScreen = React.memo(() => {
 					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Available</Text>
 				</View>
 				<View style={{ flexDirection: "row", alignItems: "center" }}>
-					<FontAwesome name="circle" size={24} color="orange" />
+					<FontAwesome name="circle" size={24} color="#FF9800" />
 					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Selected</Text>
 				</View>
 				<View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -266,7 +278,7 @@ const TheaterScreen = React.memo(() => {
 					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Reserved</Text>
 				</View>
 				<View style={{ flexDirection: "row", alignItems: "center" }}>
-					<FontAwesome name="circle" size={24} color="#F6428A" />
+					<FontAwesome name="circle" size={24} color="#415A80" />
 					<Text style={{ color: "black", fontSize: 10, marginHorizontal: 5 }}>Disabled</Text>
 				</View>
 			</View>
@@ -306,7 +318,7 @@ const TheaterScreen = React.memo(() => {
 				<TouchableOpacity
 					onPress={toggleModal}
 					style={{
-						backgroundColor: "#FF1F3D",
+						backgroundColor: PRIMARY_COLOR,
 						padding: 27,
 						borderRadius: 20,
 						width: 210,
@@ -572,7 +584,7 @@ const TheaterScreen = React.memo(() => {
 											style={{
 												width: 300,
 												height: 50,
-												backgroundColor: "gray",
+												backgroundColor: PRIMARY_COLOR,
 												alignSelf: "center",
 												borderRadius: 20,
 												marginVertical: 10,
@@ -621,7 +633,7 @@ const DateSlider = (props) => {
 
 									onDateSelect(selectedDate);
 								};
-								const buttonColor = isPressed ? "#E43838" : "#F5F5F5";
+								const buttonColor = isPressed ? "#415A80" : "#F5F5F5";
 								const txtColor = isPressed ? "white" : "black";
 								const txt = format(day, "EEE");
 								return (
@@ -720,7 +732,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	selectedTimeOption: {
-		backgroundColor: "#007AFF",
+		backgroundColor: "#415A80",
 	},
 	timeOptionText: {
 		color: "#333333",

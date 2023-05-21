@@ -1,11 +1,11 @@
 import {
 	Text,
 	View,
-	StyleSheet,
 	Image,
 	TouchableOpacity,
 	Dimensions,
 	FlatList,
+	ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import movies from "../../data/movies";
@@ -25,37 +25,39 @@ const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
 
 // ===========REDUX===========
 import { useDispatch, useSelector } from "react-redux";
-import { MAIN_COLOR_TEXT, SECONDARY_COLOR_TEXT } from "../../Style/styles";
+import { MAIN_COLOR_TEXT, PRIMARY_COLOR, SECONDARY_COLOR_TEXT } from "../../Style/styles";
 import React from "react";
+import { set } from "date-fns";
 
 const FeaturedScreen = React.memo(() => {
 	const navigation = useNavigation();
 	const DATA = movies;
 	const [movie, setMovies] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const loginUserData = useSelector((state) => state.personalInfor);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		isLoading;
+		setIsLoading(true);
 		axios
 			.get(`${baseURL}/api/movies`)
 			.then((res) => {
 				setMovies(res.data.movies);
 				// alert("get movies success");
+				setIsLoading(false);
 			})
 			.catch((err) => {
 				console.log(err);
+				setIsLoading(false);
 				// alert("get movies failed");
 			});
-		setIsLoading(false);
 	}, []);
 
 	if (isLoading) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text>loading</Text>
+				<ActivityIndicator size={"large"} color={PRIMARY_COLOR} />
 			</View>
 		);
 	}

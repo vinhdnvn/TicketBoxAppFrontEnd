@@ -30,6 +30,7 @@ const HomeScreen = React.memo(({ navigation }) => {
 	const loginUserData = useSelector((state) => state.personalInfor);
 	const [isTokken, setIsTokken] = useState("");
 	const route = useRoute();
+
 	// create useEffect to console log loginUserData
 	const user = useSelector((state) => state.personalInfor);
 	const dispatch = useDispatch();
@@ -125,13 +126,13 @@ const HomeScreen = React.memo(({ navigation }) => {
 						<View style={{ marginTop: 10, marginLeft: 40 }}>
 							<TouchableOpacity
 								onPress={() => {
-									console.log(loginUserData);
+									navigation.navigate("SearchingScreen");
 								}}
 							>
 								<Finding
 									name="magnifying-glass"
 									size={45}
-									style={{ borderRadius: "100%", opacity: 0.5, color: SECONDARY_COLOR_TEXT }}
+									style={{ borderRadius: "100%", opacity: 0.5, color: "#21F090" }}
 								/>
 							</TouchableOpacity>
 						</View>
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
 		height: "100%",
 		width: "100%",
 		flex: 1,
-		backgroundColor: "black",
+		backgroundColor: "#F3F3F3",
 	},
 
 	text: {

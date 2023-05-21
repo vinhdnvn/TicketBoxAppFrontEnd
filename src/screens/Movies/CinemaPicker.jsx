@@ -17,7 +17,7 @@ import movies from "../../data/movies";
 import { baseURL } from "../../api/client/private.client";
 import { useEffect } from "react";
 import axios from "axios";
-import { MAIN_COLOR_TEXT } from "../../Style/styles";
+import { MAIN_COLOR_TEXT, SECONDARY_COLOR_TEXT } from "../../Style/styles";
 // REDUX
 import { useDispatch, useSelector } from "react-redux";
 import { setCinema } from "../../Redux/Actions/cinemaAction";
@@ -25,7 +25,6 @@ import HandleLogged from "../../components/HandleLogged";
 import React from "react";
 const CinemaPicker = React.memo(() => {
 	const dispatch = useDispatch();
-	const stateCinema = useSelector((state) => state.cinemaInfor);
 
 	const route = useRoute();
 	const [selectedDate, setSelectedDate] = useState("");
@@ -43,16 +42,6 @@ const CinemaPicker = React.memo(() => {
 	const CARD_LENGTH = SRC_WIDTH * 0.6;
 	const SPACING = SRC_WIDTH * 0.05; //0.02
 	const SIDECARD_LENGTH = (SRC_WIDTH * 0.18) / 2;
-
-	// useEffect(() => {
-	// 	const checkIfLoggedIn = async () => {
-	// 		const token = await AsyncStorage.getItem("token");
-	// 		if (token) {
-	// 			navigation.navigate("Login");
-	// 		}
-	// 	};
-	// 	checkIfLoggedIn();
-	// }, []);
 
 	useEffect(() => {
 		axios
@@ -73,7 +62,7 @@ const CinemaPicker = React.memo(() => {
 				width: "100%",
 				height: "100%",
 				flexDirection: "column",
-				backgroundColor: "#151515",
+				backgroundColor: SECONDARY_COLOR_TEXT,
 			}}
 		>
 			{loginUserData.token ? (
